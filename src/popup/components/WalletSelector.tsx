@@ -1,13 +1,10 @@
 import { ReactNode } from 'react';
-import PhantomLogo from '../assets/PhantomLogo';
-import SolflareLogo from '../assets/SolflareLogo';
-import BackpackLogo from '../assets/BackpackLogo';
+import PetraLogo from '../assets/PetraLogo';
 import ArrowFromSquareIcon from '../icons/ArrowFromSquareIcon';
 import { Checkbox } from './Checkbox';
 
 enum Wallets {
-  Solflare = 'solflare',
-  Phantom = 'phantom',
+  Petra = 'petra',
 }
 interface WalletProps {
   title: string;
@@ -101,32 +98,17 @@ export const WalletSelector = ({
     setSelectedWallet(null);
     chrome.storage.local.remove('selectedWallet');
   }
-  const isWalletSolflare = selectedWallet === Wallets.Solflare;
-  const isWalletPhantom = selectedWallet === Wallets.Phantom;
+  const isWalletPetra = selectedWallet === Wallets.Petra;
   return (
     <div className="flex flex-col flex-1 gap-2 w-full">
       <WalletSelect
-        isSelected={isWalletPhantom}
-        title="Phantom"
-        subtitle="Blinks are also natively supported in Phantom"
-        icon={<PhantomLogo />}
+        isSelected={isWalletPetra}
+        title="Petra"
+        subtitle="Blinks are also natively supported in Petra"
+        icon={<PetraLogo />}
         onChange={(isChecked: boolean) =>
-          isChecked ? selectWallet(Wallets.Phantom) : unselectWallet()
+          isChecked ? selectWallet(Wallets.Petra) : unselectWallet()
         }
-      />
-      <WalletSelect
-        isSelected={isWalletSolflare}
-        title="Solflare"
-        icon={<SolflareLogo />}
-        onChange={(isChecked: boolean) =>
-          isChecked ? selectWallet(Wallets.Solflare) : unselectWallet()
-        }
-      />
-      <WalletLink
-        title="Backpack"
-        subtitle="Blinks are natively supported in Backpack"
-        icon={<BackpackLogo />}
-        url="https://chromewebstore.google.com/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof"
       />
     </div>
   );

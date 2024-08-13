@@ -1,6 +1,3 @@
-import base58 from 'bs58';
-import { Buffer } from 'buffer';
-
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log('on message', msg, sender);
   if (!sender.tab || !sender.tab.id) {
@@ -37,19 +34,12 @@ async function handleWalletCommunication(
       world: 'MAIN',
       target: { tabId: tabId },
       func:
-        wallet === 'solflare'
-          ? async () => {
-              // @ts-ignore
-              const provider = window.solflare;
-              const res = await provider.connect();
-              return provider.publicKey.toString();
-            }
-          : async () => {
-              // @ts-ignore
-              const provider = window.solana;
-              const res = await provider.connect();
-              return res.publicKey.toString();
-            },
+        async () => {
+          // @ts-ignore
+          const provider = window.aptos;
+          const res = await provider.connect();
+          return res.address.toString();
+        }
     });
     return res[0].result;
   } else if (type === 'sign_message') {
@@ -79,21 +69,22 @@ async function handleWalletCommunication(
       func: async (transaction: string, wallet) => {
         try {
           const res =
-            wallet === 'solflare'
-              ? // @ts-ignore
-                await window.solflare.request({
-                  method: 'signAndSendTransaction',
-                  params: {
-                    transaction,
-                  },
-                })
-              : // @ts-ignore
-                await window.solana.request({
-                  method: 'signAndSendTransaction',
-                  params: {
-                    message: transaction,
-                  },
-                });
+            // @ts-ignore
+            // await window.aptos.signAndSubmitTransaction({
+            //   function: "0x1::coin::transfer",
+            //   type_arguments: [
+            //     "0x1::aptos_coin::AptosCoin"
+            //   ],
+            //   type: 'entry_function_payload',
+            //   arguments: [
+            //     "0x0bd634d9cad82957af1f1338de981fd33e0d1928e16f0b27731e4d1b0e6e4738",
+            //     100000000
+            //   ]
+            // })
+
+            // @ts-ignore
+            await window.aptos.signAndSubmitTransaction(JSON.parse(transaction));
+
           console.log('result', res);
           return res;
         } catch (e: any) {
@@ -102,7 +93,7 @@ async function handleWalletCommunication(
         }
       },
       // @ts-ignore
-      args: [base58.encode(Buffer.from(payload.txData, 'base64')), wallet],
+      args: [payload.txData, wallet],
     });
     return res[0].result;
   }
