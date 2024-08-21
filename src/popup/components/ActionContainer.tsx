@@ -5,7 +5,13 @@ import { ActionLayout } from '../components/ActionLayout';
 import { aptosClient } from '../../utils';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 
-const ActionContainer = () => {
+export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
+
+const ActionContainer = ({
+  stylePreset = 'default',
+}: {
+  stylePreset?: StylePreset;
+}) => {
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
   const { account, network, signAndSubmitTransaction } = useWallet();
 
@@ -114,7 +120,7 @@ const ActionContainer = () => {
     );
 
     return {
-      stylePreset: 'default',
+      stylePreset: stylePreset,
       title: apiResponse.title,
       description: apiResponse.description.trim(),
       image: apiResponse.icon,
