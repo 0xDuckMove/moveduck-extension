@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { WalletSelector } from './components/WalletSelector';
 import CircleExclamationIcon from './icons/CircleExclamationIcon';
-
+import './popup.css';
 export const Popup = () => {
   const [isLoading, setLoading] = useState(true);
   const [selectedWallet, setSelectedWallet] = useState<string | null>();
