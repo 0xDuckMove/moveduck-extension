@@ -1,8 +1,8 @@
 import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { ActionButton } from './ActionButton.tsx';
-import { BaseInputContainer } from './BaseInputContainer.tsx';
-import type { BaseInputProps } from './types.ts';
-import { buildDefaultTextDescription } from './utils.ts';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
+import { buildDefaultTextDescription } from './utils';
 
 export const ActionTextArea = ({
   placeholder,

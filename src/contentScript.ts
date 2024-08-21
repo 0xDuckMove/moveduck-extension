@@ -1,5 +1,5 @@
-import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
-import { setupTwitterObserver } from "./twitter";
+import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk';
+import { setupTwitterObserver } from './twitter';
 
 // import '@dialectlabs/blinks/index.css';
 // import { setupTwitterObserver } from '@dialectlabs/blinks/ext/twitter';
@@ -32,7 +32,6 @@ import { setupTwitterObserver } from "./twitter";
 
 // initTwitterObserver();
 
-
 async function signTransaction() {
   chrome.storage.local.get(['address'], async function (res) {
     const result = JSON.parse(`{
@@ -52,7 +51,9 @@ async function signTransaction() {
 }`);
 
     // @ts-ignore
-    const { transaction: { data }, message
+    const {
+      transaction: { data },
+      message,
     } = result;
 
     const finalTransaction = {
@@ -60,27 +61,30 @@ async function signTransaction() {
       type_arguments: data.typeArguments,
       type: 'entry_function_payload',
       arguments: data.functionArguments,
-    }
+    };
 
-    chrome.runtime.sendMessage({
-      wallet: "petra",
-      type: 'sign_transaction',
-      payload: {
-        txData: JSON.stringify(finalTransaction),
-      }
-    }, async (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error:', chrome.runtime.lastError);
-      } else {
-        console.log('Pending Transaction:', response);
-        const config = new AptosConfig({ network: Network.TESTNET });
-        const aptos = new Aptos(config);
-        const result = await aptos.waitForTransaction({
-          transactionHash: response.hash,
-        });
-        console.log('Transaction:', result);
-      }
-    })
+    chrome.runtime.sendMessage(
+      {
+        wallet: 'petra',
+        type: 'sign_transaction',
+        payload: {
+          txData: JSON.stringify(finalTransaction),
+        },
+      },
+      async (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error:', chrome.runtime.lastError);
+        } else {
+          console.log('Pending Transaction:', response);
+          const config = new AptosConfig({ network: Network.TESTNET });
+          const aptos = new Aptos(config);
+          const result = await aptos.waitForTransaction({
+            transactionHash: response.hash,
+          });
+          console.log('Transaction:', result);
+        }
+      },
+    );
   });
 }
 
@@ -89,17 +93,20 @@ connectWalletBtn.textContent = 'Connect Wallet';
 connectWalletBtn.style.position = 'absolute';
 connectWalletBtn.style.bottom = '0px';
 connectWalletBtn.addEventListener('click', () => {
-  chrome.runtime.sendMessage({
-    wallet: "petra",
-    type: 'connect',
-  }, (response) => {
-    if (chrome.runtime.lastError) {
-      console.error('Error:', chrome.runtime.lastError);
-    } else {
-      console.log('Address:', response);
-      chrome.storage.local.set({ address: response });
-    }
-  })
+  chrome.runtime.sendMessage(
+    {
+      wallet: 'petra',
+      type: 'connect',
+    },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error:', chrome.runtime.lastError);
+      } else {
+        console.log('Address:', response);
+        chrome.storage.local.set({ address: response });
+      }
+    },
+  );
 });
 document.body.appendChild(connectWalletBtn);
 
@@ -112,7 +119,6 @@ signBtn.addEventListener('click', () => {
 });
 
 document.body.appendChild(signBtn);
-
 
 const action = `{
   "title": "Actions Example - Transfer Native Aptos",
@@ -146,4 +152,4 @@ const action = `{
   }
 }`;
 
-setupTwitterObserver();
+// setupTwitterObserver();

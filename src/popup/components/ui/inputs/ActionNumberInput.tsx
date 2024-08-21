@@ -1,9 +1,9 @@
 import { type ChangeEvent, useEffect, useId, useMemo, useState } from 'react';
-import NumberIcon from '../icons/NumberIcon.tsx';
-import { ActionButton } from './ActionButton.tsx';
-import { BaseInputContainer } from './BaseInputContainer.tsx';
-import type { BaseInputProps } from './types.ts';
-import { buildDefaultNumberDescription } from './utils.ts';
+import NumberIcon from '../icons/NumberIcon';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
+import { buildDefaultNumberDescription } from './utils';
 
 export const ActionNumberInput = ({
   placeholder,

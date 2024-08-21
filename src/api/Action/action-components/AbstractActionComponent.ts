@@ -1,11 +1,11 @@
-import { proxify } from '../../../utils/proxify.ts';
+import { proxify } from '../../../utils/proxify';
 import type {
   ActionError,
   ActionPostRequest,
   ActionPostResponse,
   TypedActionParameter,
-} from '../../actions-spec.ts';
-import { Action } from '../Action.ts';
+} from '../../actions-spec';
+import { Action } from '../Action';
 
 export abstract class AbstractActionComponent {
   protected constructor(

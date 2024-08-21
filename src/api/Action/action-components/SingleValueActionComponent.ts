@@ -2,9 +2,9 @@ import type {
   GeneralParameterType,
   TypedActionParameter,
 } from '../../actions-spec.ts';
-import { Action } from '../Action.ts';
-import { AbstractActionComponent } from './AbstractActionComponent.ts';
-import { ButtonActionComponent } from './ButtonActionComponent.ts';
+import { Action } from '../Action';
+import { AbstractActionComponent } from './AbstractActionComponent';
+import { ButtonActionComponent } from './ButtonActionComponent';
 
 export class SingleValueActionComponent extends AbstractActionComponent {
   private parameterValue: string | null = null;

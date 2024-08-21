@@ -1,7 +1,7 @@
 import type {
   SelectableParameterType,
   TypedActionParameter,
-} from '../../actions-spec.ts';
+} from '../../actions-spec';
 
 export const isPatternAllowed = (parameter: TypedActionParameter) => {
   return (

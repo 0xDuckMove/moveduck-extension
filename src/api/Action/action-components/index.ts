@@ -1,7 +1,7 @@
-export { AbstractActionComponent } from './AbstractActionComponent.ts';
-export { ButtonActionComponent } from './ButtonActionComponent.ts';
-export { FormActionComponent } from './FormActionComponent.ts';
-export { MultiValueActionComponent } from './MultiValueActionComponent.ts';
-export { SingleValueActionComponent } from './SingleValueActionComponent.ts';
+export { AbstractActionComponent } from './AbstractActionComponent';
+export { ButtonActionComponent } from './ButtonActionComponent';
+export { FormActionComponent } from './FormActionComponent';
+export { MultiValueActionComponent } from './MultiValueActionComponent';
+export { SingleValueActionComponent } from './SingleValueActionComponent';
 
-export * from './guards.ts';
+export * from './guards';
