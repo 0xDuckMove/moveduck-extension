@@ -49,6 +49,23 @@ export default {
       transparent: 'transparent',
       currentColor: 'currentColor',
     },
+    textColor: {
+      primary: '#232324',
+      secondary: '#434445',
+      tertiary: '#737373',
+      quaternary: '#888989',
+      inverse: '#FFFFFF',
+      icon: {
+        primary: '#2A2A2B',
+        secondary: '#888989',
+        tertiary: '#B3B3B3',
+        inverse: '#FFFFFF',
+      },
+    },
+    borderColor: {
+      primary: '#DEE1E7',
+      secondary: '#EBEBEB',
+    },
     borderRadius: {
       lg: 'var(--blink-border-radius-rounded-lg)',
       xl: 'var(--blink-border-radius-rounded-xl)',
@@ -65,6 +82,7 @@ export default {
         text: ['1rem', '1.2rem'],
         subtext: ['0.867rem', '1.067rem'],
         caption: ['0.73333rem', '0.93333rem'],
+        highlight: ['1.5rem', '2rem'],
       },
       boxShadow: {
         action: 'var(--blink-shadow-container)',
