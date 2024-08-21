@@ -6,10 +6,10 @@ import {
   NextActionPostRequest,
   PostNextActionLink,
   TypedActionParameter,
-} from "@/api/actions-spec";
-import { isUrlSameOrigin } from "../../shared";
-import { proxify, proxifyImage } from "@/utils/proxify";
-import type { ActionAdapter } from "@/api/ActionConfig";
+} from '../../api/actions-spec';
+import { isUrlSameOrigin } from '../../shared';
+import { proxify, proxifyImage } from '../../utils/proxify';
+import type { ActionAdapter } from '../../api/ActionConfig';
 
 import {
   type AbstractActionComponent,
@@ -17,9 +17,9 @@ import {
   FormActionComponent,
   MultiValueActionComponent,
   SingleValueActionComponent,
-} from "./action-components";
+} from './action-components';
 
-const MULTI_VALUE_TYPES: ActionParameterType[] = ["checkbox"];
+const MULTI_VALUE_TYPES: ActionParameterType[] = ['checkbox'];
 
 interface ActionMetadata {
   blockchainIds: string[];
@@ -42,17 +42,17 @@ export class Action {
     private readonly _data: NextAction,
     private readonly _metadata: ActionMetadata,
     private _adapter?: ActionAdapter,
-    private readonly _chainMetadata: ActionChainMetadata = { isChained: false }
+    private readonly _chainMetadata: ActionChainMetadata = { isChained: false },
   ) {
     // if no links present or completed, fallback to original aptos pay spec (or just using the button as a placeholder)
-    if (_data.type === "completed" || !_data.links?.actions) {
+    if (_data.type === 'completed' || !_data.links?.actions) {
       this._actions = [new ButtonActionComponent(this, _data.label, _url)];
       return;
     }
 
     const urlObj = new URL(_url);
     this._actions = _data.links.actions.map((action) => {
-      const href = action.href.startsWith("http")
+      const href = action.href.startsWith('http')
         ? action.href
         : urlObj.origin + action.href;
 
@@ -77,7 +77,7 @@ export class Action {
   }
 
   public get icon() {
-    if (this._data.icon.startsWith("data:")) {
+    if (this._data.icon.startsWith('data:')) {
       return this._data.icon;
     }
     return proxifyImage(this._data.icon).toString();
@@ -109,7 +109,7 @@ export class Action {
 
   public get adapter() {
     if (!this._adapter) {
-      throw new Error("No adapter provided");
+      throw new Error('No adapter provided');
     }
 
     return this._adapter;
@@ -121,9 +121,9 @@ export class Action {
 
   public async chain<N extends NextActionLink>(
     next: N,
-    chainData?: N extends PostNextActionLink ? NextActionPostRequest : never
+    chainData?: N extends PostNextActionLink ? NextActionPostRequest : never,
   ): Promise<Action | null> {
-    if (next.type === "inline") {
+    if (next.type === 'inline') {
       return new Action(this.url, next.action, this.metadata, this.adapter, {
         isChained: true,
         isInline: true,
@@ -134,27 +134,27 @@ export class Action {
 
     if (!isUrlSameOrigin(baseUrlObj.origin, next.href)) {
       console.error(
-        `Chained action is not the same origin as the current action. Original: ${this.url}, chained: ${next.href}`
+        `Chained action is not the same origin as the current action. Original: ${this.url}, chained: ${next.href}`,
       );
       return null;
     }
 
-    const href = next.href.startsWith("http")
+    const href = next.href.startsWith('http')
       ? next.href
       : baseUrlObj.origin + next.href;
 
     const proxyUrl = proxify(href);
     const response = await fetch(proxyUrl, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(chainData),
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     });
 
     if (!response.ok) {
       console.error(
-        `Failed to fetch chained action ${proxyUrl}, action url: ${next.href}`
+        `Failed to fetch chained action ${proxyUrl}, action url: ${next.href}`,
       );
       return null;
     }
@@ -173,7 +173,7 @@ export class Action {
     url: string,
     data: NextAction,
     metadata: ActionMetadata,
-    adapter?: ActionAdapter
+    adapter?: ActionAdapter,
   ) {
     return new Action(url, data, metadata, adapter);
   }
@@ -182,28 +182,28 @@ export class Action {
     const proxyUrl = proxify(apiUrl);
     const response = await fetch(proxyUrl, {
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     });
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch action ${proxyUrl}, action url: ${apiUrl}`
+        `Failed to fetch action ${proxyUrl}, action url: ${apiUrl}`,
       );
     }
 
     const data = (await response.json()) as ActionGetResponse;
     const metadata = getActionMetadata(response);
 
-    return new Action(apiUrl, { ...data, type: "action" }, metadata, adapter);
+    return new Action(apiUrl, { ...data, type: 'action' }, metadata, adapter);
   }
 }
 
 const getActionMetadata = (response: Response): ActionMetadata => {
   // for multi-chain x-blockchain-ids
   const blockchainIds = (
-    response?.headers?.get("x-blockchain-ids") || ""
-  ).split(",");
+    response?.headers?.get('x-blockchain-ids') || ''
+  ).split(',');
 
   return {
     blockchainIds,
@@ -214,7 +214,7 @@ const componentFactory = (
   parent: Action,
   label: string,
   href: string,
-  parameters?: TypedActionParameter[]
+  parameters?: TypedActionParameter[],
 ): AbstractActionComponent => {
   if (!parameters?.length) {
     return new ButtonActionComponent(parent, label, href);
