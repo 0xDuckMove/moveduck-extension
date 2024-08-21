@@ -49,7 +49,7 @@ export type Disclaimer =
     };
 
 const stylePresetClassMap: Record<StylePreset, string> = {
-  default: 'dial-light',
+  default: 'x-light',
   'x-dark': 'x-dark',
   'x-light': 'x-light',
   custom: 'custom',
@@ -329,12 +329,12 @@ const buildDefaultFormValues = (
         if (i.type === 'checkbox') {
           return [
             i.name,
-            i.options?.filter((o) => o.selected).map((o) => o.value),
+            i.options?.filter((o: any) => o.selected).map((o: any) => o.value),
           ];
         }
 
         return i.type === 'radio' || i.type === 'select'
-          ? [i.name, i.options?.find((o) => o.selected)?.value]
+          ? [i.name, i.options?.find((o: any) => o.selected)?.value]
           : null;
       })
       .filter((i) => !!i),
