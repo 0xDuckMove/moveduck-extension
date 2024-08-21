@@ -33,6 +33,12 @@ export class ActionsRegistry {
           ]),
         )
       : {};
+
+    console.log(
+      this.actionsByHost,
+      this.websitesByHost,
+      this.interstitialsByHost,
+    );
   }
 
   public static getInstance(config?: ActionsRegistryConfig): ActionsRegistry {
@@ -92,10 +98,7 @@ export class ActionsRegistry {
       const host = urlObj.host;
       return this.actionsByHost[host] ?? null;
     } catch (e) {
-      console.error(
-        `[@dialectlabs/blinks] Failed to lookup action for URL: ${url}`,
-        e,
-      );
+      console.error(`[ActionX] Failed to lookup action for URL: ${url}`, e);
       return null;
     }
   }
@@ -106,10 +109,7 @@ export class ActionsRegistry {
       const host = urlObj.host;
       return this.websitesByHost[host] ?? null;
     } catch (e) {
-      console.error(
-        `[@dialectlabs/blinks] Failed to lookup website for URL: ${url}`,
-        e,
-      );
+      console.error(`[ActionX] Failed to lookup website for URL: ${url}`, e);
       return null;
     }
   }
@@ -121,7 +121,7 @@ export class ActionsRegistry {
       return this.interstitialsByHost[host] ?? null;
     } catch (e) {
       console.error(
-        `[@dialectlabs/blinks] Failed to lookup interstitial for URL: ${url}`,
+        `[ActionX] Failed to lookup interstitial for URL: ${url}`,
         e,
       );
       return null;
@@ -184,11 +184,14 @@ export const getExtendedInterstitialState = (
 
 async function fetchActionsRegistryConfig(): Promise<ActionsRegistryConfig> {
   try {
-    const response = await fetch('https://actions-registry.dial.to/all');
+    const response = await fetch(
+      'http://localhost:3000/api/actions/actions-registry/all',
+    );
+    console.log(response);
 
     if (!response.ok) {
       console.error(
-        '[@dialectlabs/blinks] Failed to fetch actions registry config',
+        '[ActionX] Failed to fetch actions registry config',
         await response.json(),
       );
       return { actions: [], interstitials: [], websites: [] };
@@ -196,10 +199,7 @@ async function fetchActionsRegistryConfig(): Promise<ActionsRegistryConfig> {
 
     return await response.json();
   } catch (e) {
-    console.error(
-      '[@dialectlabs/blinks] Failed to fetch actions registry config',
-      e,
-    );
+    console.error('[ActionX] Failed to fetch actions registry config', e);
     return { actions: [], interstitials: [], websites: [] };
   }
 }
