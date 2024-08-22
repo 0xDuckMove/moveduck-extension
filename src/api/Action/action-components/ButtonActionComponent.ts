@@ -1,9 +1,10 @@
 import type {
   ActionPostRequest,
   TypedActionParameter,
-} from '../../actions-spec';
-import { Action } from '../Action';
-import { AbstractActionComponent } from './AbstractActionComponent';
+} from '../../actions-spec.ts';
+import { Action } from '../Action.ts';
+import { AbstractActionComponent } from './AbstractActionComponent.ts';
+
 
 export class ButtonActionComponent extends AbstractActionComponent {
   constructor(

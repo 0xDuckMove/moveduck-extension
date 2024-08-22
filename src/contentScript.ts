@@ -1,60 +1,17 @@
 import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk';
 import { setupTwitterObserver } from './twitter';
 
-// import '@dialectlabs/blinks/index.css';
-// import { setupTwitterObserver } from '@dialectlabs/blinks/ext/twitter';
-// import { ActionConfig } from '@dialectlabs/blinks';
+// Hàm ký giao dịch, nhận vào tham số 'transaction'
+export async function signTransaction(transaction: any) {
+  // Lấy thông tin địa chỉ từ chrome storage
+  chrome.storage.local.get(['address'], async (res) => {
+    if (!res.address) {
+      console.error('No address found in storage');
+      return;
+    }
 
-// const adapter = (wallet: string) =>
-//   new ActionConfig(import.meta.env.VITE_RPC_URL, {
-//     signTransaction: (tx: string) =>
-//       chrome.runtime.sendMessage({
-//         type: 'sign_transaction',
-//         wallet,
-//         payload: {
-//           txData: tx,
-//         },
-//       }),
-//     connect: () =>
-//       chrome.runtime.sendMessage({
-//         wallet,
-//         type: 'connect',
-//       }),
-//   });
-
-// function initTwitterObserver() {
-//   chrome.runtime.sendMessage({ type: 'getSelectedWallet' }, (wallet) => {
-//     if (wallet) {
-//       setupTwitterObserver(adapter(wallet));
-//     }
-//   });
-// }
-
-// initTwitterObserver();
-
-async function signTransaction() {
-  chrome.storage.local.get(['address'], async function (res) {
-    const result = JSON.parse(`{
-    "transaction": {
-        "data": {
-            "function": "0x1::coin::transfer",
-            "typeArguments": [
-                "0x1::aptos_coin::AptosCoin"
-            ],
-            "functionArguments": [
-                "0x0bd634d9cad82957af1f1338de981fd33e0d1928e16f0b27731e4d1b0e6e4738",
-                100000000
-            ]
-        }
-    },
-    "message": "Send 1 APT to 0x0bd634d9cad82957af1f1338de981fd33e0d1928e16f0b27731e4d1b0e6e4738"
-}`);
-
-    // @ts-ignore
-    const {
-      transaction: { data },
-      message,
-    } = result;
+    // Giả định transaction đã có cấu trúc như mong muốn, nếu không cần phải chỉnh sửa trước khi xử lý
+    const { data } = transaction;
 
     const finalTransaction = {
       function: data.function,
@@ -63,9 +20,10 @@ async function signTransaction() {
       arguments: data.functionArguments,
     };
 
+    // Gửi tin nhắn đến Chrome extension để thực hiện ký giao dịch
     chrome.runtime.sendMessage(
       {
-        wallet: 'petra',
+        wallet: 'petra', // Đặt tên ví phù hợp
         type: 'sign_transaction',
         payload: {
           txData: JSON.stringify(finalTransaction),
@@ -73,83 +31,105 @@ async function signTransaction() {
       },
       async (response) => {
         if (chrome.runtime.lastError) {
-          console.error('Error:', chrome.runtime.lastError);
+          console.error('Error:', chrome.runtime.lastError.message);
+        } else if (response.error) {
+          console.error('Transaction Error:', response.error);
         } else {
           console.log('Pending Transaction:', response);
+
+          // Cấu hình và chờ kết quả giao dịch trên mạng lưới Aptos
           const config = new AptosConfig({ network: Network.TESTNET });
           const aptos = new Aptos(config);
-          const result = await aptos.waitForTransaction({
-            transactionHash: response.hash,
-          });
-          console.log('Transaction:', result);
+          try {
+            const result = await aptos.waitForTransaction({
+              transactionHash: response.hash,
+            });
+
+            console.log('Transaction:', result);
+          } catch (err) {
+            console.error('Error waiting for transaction:', err);
+          }
         }
       },
     );
   });
 }
 
-const connectWalletBtn = document.createElement('button');
-connectWalletBtn.textContent = 'Connect Wallet';
-connectWalletBtn.style.position = 'absolute';
-connectWalletBtn.style.bottom = '0px';
-connectWalletBtn.addEventListener('click', () => {
-  chrome.runtime.sendMessage(
-    {
-      wallet: 'petra',
-      type: 'connect',
-    },
-    (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error:', chrome.runtime.lastError);
-      } else {
-        console.log('Address:', response);
-        chrome.storage.local.set({ address: response });
-      }
-    },
-  );
-});
-document.body.appendChild(connectWalletBtn);
+interface ActionAdapter {
+  signTransaction: (tx: string) => Promise<any>;
+  connect: () => Promise<any>;
+  confirmTransaction: (transactionHash: string) => Promise<any>;
+}
 
-const signBtn = document.createElement('button');
-signBtn.textContent = 'Sign';
-signBtn.style.position = 'absolute';
-
-signBtn.addEventListener('click', () => {
-  signTransaction();
-});
-
-document.body.appendChild(signBtn);
-
-const action = `{
-  "title": "Actions Example - Transfer Native Aptos",
-  "icon": "https://aptosfoundation.org/brandbook/logotype/PNG/Aptos_Primary_BLK.png",
-  "description": "Transfer APT to another APT wallet",
-  "links": {
-    "actions": [
-      {
-        "label": "Send 1 APT",
-        "amount": 1
-      },
-      {
-        "label": "Send 5 APT",
-        "amount": 5
-      },
-      {
-        "label": "Send 10 APT",
-        "amount": 10
-      },
-      {
-        "label": "Send APT",
-        "parameters": [
+// Adapter setup cho ví
+const adapter = (wallet: string): ActionAdapter => {
+  return {
+    signTransaction: (tx: string) =>
+      new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
           {
-            "name": "amount",
-            "label": "Enter the amount of APT to send",
-            "required": true
-          }
-        ]
-      }
-    ]
-  }
-}`;
+            type: 'sign_transaction',
+            wallet,
+            payload: {
+              txData: tx,
+            },
+          },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(response);
+            }
+          },
+        );
+      }),
+    connect: () =>
+      new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          {
+            wallet,
+            type: 'connect',
+          },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(response);
+            }
+          },
+        );
+      }),
+    confirmTransaction: (transactionHash: string) =>
+      new Promise((resolve, reject) => {
+        // Gửi tin nhắn để xác nhận giao dịch
+        chrome.runtime.sendMessage(
+          {
+            type: 'confirm_transaction',
+            wallet,
+            payload: {
+              transactionHash,
+            },
+          },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(response);
+            }
+          },
+        );
+      }),
+  };
+};
 
-// setupTwitterObserver();
+// Khởi tạo observer cho Twitter
+function initTwitterObserver() {
+  chrome.runtime.sendMessage({ type: 'getSelectedWallet' }, (wallet) => {
+    if (wallet) {
+      setupTwitterObserver(adapter(wallet));
+    }
+  });
+}
+
+// Gọi hàm khởi tạo
+initTwitterObserver();
