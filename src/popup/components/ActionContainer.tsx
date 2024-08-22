@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ActionLayout } from '../components/ActionLayout';
 import { aptosClient } from '../../utils';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import { signTransaction } from '../../contentScript';
 
 export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
 
@@ -13,7 +14,7 @@ const ActionContainer = ({
   stylePreset?: StylePreset;
 }) => {
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
-  const { account, network, signAndSubmitTransaction } = useWallet();
+  const { network, signAndSubmitTransaction } = useWallet();
 
   interface ActionWithParameters {
     href: string;
@@ -45,8 +46,22 @@ const ActionContainer = ({
   });
 
   const handleActionClick = async (action: Action) => {
-    console.log('account :', account);
+    const account = await chrome.storage.local.get('address');
     if (!account) {
+      chrome.runtime.sendMessage(
+        {
+          wallet: 'petra',
+          type: 'connect',
+        },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('Error:', chrome.runtime.lastError);
+          } else {
+            console.log('Address:', response);
+            chrome.storage.local.set({ address: response });
+          }
+        },
+      );
       console.error('No account found');
       return;
     }
@@ -97,10 +112,7 @@ const ActionContainer = ({
       const { transaction, message } = result;
       console.log(transaction);
 
-      const pendingTransaction = await signAndSubmitTransaction(transaction);
-      await aptosClient(network).waitForTransaction({
-        transactionHash: pendingTransaction.hash,
-      });
+      await signTransaction(transaction);
     } catch (error) {
       console.error('Error handling action click:', error);
     }
