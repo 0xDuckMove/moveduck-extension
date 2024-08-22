@@ -20,12 +20,12 @@ export const ActionRadioGroup = ({
 }) => {
   const isStandalone = !!button;
   const hasInitiallySelectedOption = useMemo(
-    () => options.find((option) => option.selected),
+    () => options.find((option: any) => option.selected),
     [options],
   );
 
   const [value, setValue] = useState<string>(
-    options.find((option) => option.selected)?.value ?? '',
+    options.find((option: any) => option.selected)?.value ?? '',
   );
   const [isValid, setValid] = useState(
     isStandalone
@@ -73,7 +73,7 @@ export const ActionRadioGroup = ({
             'grid grid-cols-2 gap-x-4 gap-y-5': isStandalone,
           })}
         >
-          {options.map((option) => (
+          {options.map((option: any) => (
             <div
               className="inline-flex"
               key={`${option.value}_${option.label}`}

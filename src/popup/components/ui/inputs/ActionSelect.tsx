@@ -1,7 +1,7 @@
 import { type ChangeEvent, useEffect, useId, useMemo, useState } from 'react';
-import { ActionButton } from './ActionButton.tsx';
-import { BaseInputContainer } from './BaseInputContainer.tsx';
-import type { BaseInputProps } from './types.ts';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
 
 export const ActionSelect = ({
   placeholder,
@@ -23,7 +23,7 @@ export const ActionSelect = ({
     (placeholder || 'Select...') + (required ? '*' : '');
 
   const initiallySelectedOption = useMemo(
-    () => options.find((option) => option.selected),
+    () => options.find((option: any) => option.selected),
     [options],
   );
 
@@ -79,7 +79,7 @@ export const ActionSelect = ({
         <option disabled={true} value={placeholderValueId}>
           {placeholderWithRequired}
         </option>
-        {options.map((option) => (
+        {options.map((option: any) => (
           <option key={`${option.value}_${option.label}`} value={option.value}>
             {option.label}
           </option>

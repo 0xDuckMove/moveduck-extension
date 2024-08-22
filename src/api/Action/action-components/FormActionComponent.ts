@@ -1,11 +1,11 @@
 import type {
   ActionPostRequest,
   TypedActionParameter,
-} from '../../actions-spec.ts';
-import { Action } from '../Action.ts';
-import { AbstractActionComponent } from './AbstractActionComponent.ts';
-import { ButtonActionComponent } from './ButtonActionComponent.ts';
-import { SingleValueActionComponent } from './SingleValueActionComponent.ts';
+} from '../../actions-spec';
+import { Action } from '../Action';
+import { AbstractActionComponent } from './AbstractActionComponent';
+import { ButtonActionComponent } from './ButtonActionComponent';
+import { SingleValueActionComponent } from './SingleValueActionComponent';
 
 export class FormActionComponent extends AbstractActionComponent {
   private parameterValues: Record<string, string | string[]> = {};

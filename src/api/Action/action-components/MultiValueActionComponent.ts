@@ -2,10 +2,10 @@ import type {
   ActionPostRequest,
   SelectableParameterType,
   TypedActionParameter,
-} from '../../actions-spec.ts';
-import { Action } from '../Action.ts';
-import { AbstractActionComponent } from './AbstractActionComponent.ts';
-import { ButtonActionComponent } from './ButtonActionComponent.ts';
+} from '../../actions-spec';
+import { Action } from '../Action';
+import { AbstractActionComponent } from './AbstractActionComponent';
+import { ButtonActionComponent } from './ButtonActionComponent';
 
 export class MultiValueActionComponent extends AbstractActionComponent {
   private parameterValue: Array<string> = [];

@@ -2,14 +2,14 @@ import {
   ActionParameterType,
   SelectableParameterType,
   TypedActionParameter,
-} from "@/api/actions-spec";
+} from '../../../../api/actions-spec';
 
 export type InputType = ActionParameterType;
 
 export interface BaseButtonProps {
   text: string | null;
   loading?: boolean;
-  variant?: "default" | "success" | "error";
+  variant?: 'default' | 'success' | 'error';
   disabled?: boolean;
   onClick: (params?: Record<string, string | string[]>) => void;
 }
@@ -25,5 +25,5 @@ export interface BaseInputProps {
   pattern?: string;
   description?: string;
   button?: BaseButtonProps;
-  options?: TypedActionParameter<SelectableParameterType>["options"];
+  options?: TypedActionParameter<SelectableParameterType>['options'];
 }

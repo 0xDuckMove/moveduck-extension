@@ -6,11 +6,11 @@ import {
   useMemo,
   useState,
 } from 'react';
-import CalendarIcon from '../icons/CalendarIcon.tsx';
-import { ActionButton } from './ActionButton.tsx';
-import { BaseInputContainer } from './BaseInputContainer.tsx';
-import type { BaseInputProps } from './types.ts';
-import { buildDefaultDateDescription } from './utils.ts';
+import CalendarIcon from '../icons/CalendarIcon';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
+import { buildDefaultDateDescription } from './utils';
 
 export const ActionDateInput = ({
   type = 'date',

@@ -57,7 +57,7 @@ export const ActionCheckboxGroup = ({
     });
 
   const hasInitiallySelectedOption = useMemo(
-    () => options.find((option) => option.selected),
+    () => options.find((option: any) => option.selected),
     [options],
   );
 
@@ -66,7 +66,7 @@ export const ActionCheckboxGroup = ({
     valid: boolean;
   }>({
     value: Object.fromEntries(
-      options.map((option) => [option.value, option.selected ?? false]),
+      options.map((option: any) => [option.value, option.selected ?? false]),
     ),
     valid: isStandalone
       ? !!hasInitiallySelectedOption
@@ -130,7 +130,7 @@ export const ActionCheckboxGroup = ({
             'grid grid-cols-2 gap-x-4 gap-y-5': isStandalone,
           })}
         >
-          {options.map((option) => (
+          {options.map((option: any) => (
             <div
               className="inline-flex"
               key={`${option.value}_${option.label}`}

@@ -1,8 +1,8 @@
-import { type ChangeEvent, useEffect, useMemo, useState } from "react";
-import { ActionButton } from "./ActionButton.tsx";
-import { BaseInputContainer } from "./BaseInputContainer.tsx";
-import type { BaseInputProps } from "./types.ts";
-import { buildDefaultTextDescription } from "./utils.ts";
+import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
+import { buildDefaultTextDescription } from './utils';
 
 export const ActionTextInput = ({
   placeholder,
@@ -16,12 +16,12 @@ export const ActionTextInput = ({
   max,
   description,
   required,
-}: Omit<BaseInputProps, "type"> & {
+}: Omit<BaseInputProps, 'type'> & {
   onChange?: (value: string) => void;
   onValidityChange?: (state: boolean) => void;
 }) => {
   const isStandalone = !!button;
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [isValid, setValid] = useState(!isStandalone && !required);
   const minLength = min as number;
   const maxLength = max as number;
@@ -44,7 +44,7 @@ export const ActionTextInput = ({
   };
 
   const placeholderWithRequired =
-    (placeholder || "Type here...") + (required ? "*" : "");
+    (placeholder || 'Type here...') + (required ? '*' : '');
 
   const validationProps = useMemo(
     () => ({
@@ -53,7 +53,7 @@ export const ActionTextInput = ({
       pattern,
       title: description,
     }),
-    [minLength, maxLength, pattern, description]
+    [minLength, maxLength, pattern, description],
   );
 
   return (
@@ -68,7 +68,7 @@ export const ActionTextInput = ({
           <ActionButton
             {...button}
             onClick={() => button.onClick({ [name]: value })}
-            disabled={button.disabled || value === "" || !isValid}
+            disabled={button.disabled || value === '' || !isValid}
           />
         ) : null
       }

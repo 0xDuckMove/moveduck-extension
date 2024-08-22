@@ -1,9 +1,9 @@
 import { type ChangeEvent, useEffect, useId, useMemo, useState } from 'react';
-import EmailIcon from '../icons/EmailIcon.tsx';
-import { ActionButton } from './ActionButton.tsx';
-import { BaseInputContainer } from './BaseInputContainer.tsx';
-import type { BaseInputProps } from './types.ts';
-import { buildDefaultTextDescription } from './utils.ts';
+import EmailIcon from '../icons/EmailIcon';
+import { ActionButton } from './ActionButton';
+import { BaseInputContainer } from './BaseInputContainer';
+import type { BaseInputProps } from './types';
+import { buildDefaultTextDescription } from './utils';
 
 export const ActionEmailInput = ({
   placeholder,

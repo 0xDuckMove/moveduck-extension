@@ -28,6 +28,7 @@
     "@aptos-labs/wallet-adapter-react": "^3.5.10",
     "@dialectlabs/blinks": "^0.7.0",
     "@solana/web3.js": "^1.95.1",
+    "aptos": "^1.21.0",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",

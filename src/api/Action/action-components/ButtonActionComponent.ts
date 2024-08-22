@@ -2,9 +2,9 @@ import type {
   ActionPostRequest,
   TypedActionParameter,
 } from '../../actions-spec.ts';
-
 import { Action } from '../Action.ts';
 import { AbstractActionComponent } from './AbstractActionComponent.ts';
+
 
 export class ButtonActionComponent extends AbstractActionComponent {
   constructor(
