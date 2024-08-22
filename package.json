@@ -1,9 +1,9 @@
 {
-  "name": "blink-twitter-inject",
-  "displayName": "Dialect Blinks",
+  "name": "actionx-twitter-inject",
+  "displayName": "ActionX",
   "version": "0.0.9",
-  "author": "dialect",
-  "description": "Enable Solana Blinks on Twitter, with wallet support for Phantom, Backpack and Solflare.",
+  "author": "actionx",
+  "description": "Enable ActionX on Twitter, with wallet support by APTOS",
   "type": "module",
   "license": "MIT",
   "keywords": [
