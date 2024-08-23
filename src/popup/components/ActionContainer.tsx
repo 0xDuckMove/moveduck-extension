@@ -45,9 +45,18 @@ const ActionContainer = ({
     onClick: () => handleActionClick(action),
   });
 
+  function isEmpty(obj: object) {
+    for (const prop in obj) {
+      if (Object.hasOwn(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   const handleActionClick = async (action: Action) => {
     const account = await chrome.storage.local.get('address');
-    if (!account) {
+    if (isEmpty(account) || !account.address) {
       chrome.runtime.sendMessage(
         {
           wallet: 'petra',
