@@ -159,7 +159,7 @@ const ActionContainer = ({
 
   useEffect(() => {
     const fetchApiData = async () => {
-      const apiAction = 'http://localhost:3000/api/actions/transfer-apt';
+      const apiAction = 'https://server.actionxapt.com/api/actions/transfer-apt';
       if (1) {
         try {
           const response = await fetch(apiAction);
