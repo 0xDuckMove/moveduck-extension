@@ -185,7 +185,7 @@ export const getExtendedInterstitialState = (
 async function fetchActionsRegistryConfig(): Promise<ActionsRegistryConfig> {
   try {
     const response = await fetch(
-      'http://localhost:3000/api/actions/actions-registry/all',
+      'https://server.actionxapt.com/api/actions/actions-registry/all',
     );
     console.log(response);
 
