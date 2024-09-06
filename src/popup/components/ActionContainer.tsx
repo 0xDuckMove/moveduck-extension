@@ -10,11 +10,12 @@ export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
 
 const ActionContainer = ({
   stylePreset = 'default',
+  apiAction,
 }: {
   stylePreset?: StylePreset;
+  apiAction: string;
 }) => {
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
-  const { network, signAndSubmitTransaction } = useWallet();
 
   interface ActionWithParameters {
     href: string;
@@ -168,7 +169,6 @@ const ActionContainer = ({
 
   useEffect(() => {
     const fetchApiData = async () => {
-      const apiAction = 'https://server.actionxapt.com/api/actions/transfer-apt';
       if (1) {
         try {
           const response = await fetch(apiAction);
