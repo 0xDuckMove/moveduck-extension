@@ -10,11 +10,12 @@ export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
 
 const ActionContainer = ({
   stylePreset = 'default',
+  apiAction,
 }: {
   stylePreset?: StylePreset;
+  apiAction: string;
 }) => {
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
-  const { network, signAndSubmitTransaction } = useWallet();
 
   interface ActionWithParameters {
     href: string;
@@ -25,6 +26,10 @@ const ActionContainer = ({
       required: boolean;
     }>;
   }
+
+  const lastPartIndex = apiAction.lastIndexOf('/');
+  const actionLink = apiAction.substring(0, lastPartIndex + 1);
+  const addressFromLink = apiAction.substring(lastPartIndex + 1) as string;
 
   interface ActionWithoutParameters {
     href: string;
@@ -45,9 +50,18 @@ const ActionContainer = ({
     onClick: () => handleActionClick(action),
   });
 
+  function isEmpty(obj: object) {
+    for (const prop in obj) {
+      if (Object.hasOwn(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   const handleActionClick = async (action: Action) => {
     const account = await chrome.storage.local.get('address');
-    if (!account) {
+    if (isEmpty(account) || !account.address) {
       chrome.runtime.sendMessage(
         {
           wallet: 'petra',
@@ -94,8 +108,7 @@ const ActionContainer = ({
 
       const body = {
         fromAddress: account.address as string,
-        toAddress:
-          '0xe975d15fd30e20768cb5f2dc05d5966c31e235324bb2794e1c49df63c475799e',
+        toAddress: addressFromLink,
       };
 
       const response = await fetch(url, {
@@ -159,12 +172,11 @@ const ActionContainer = ({
 
   useEffect(() => {
     const fetchApiData = async () => {
-      const apiAction = 'https://server.actionxapt.com/api/actions/transfer-apt';
-      if (1) {
+      if (addressFromLink) {
         try {
-          const response = await fetch(apiAction);
+          const response = await fetch(actionLink);
           const data = await response.json();
-          const baseUrl = new URL(apiAction).origin;
+          const baseUrl = new URL(actionLink).origin;
           const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
           setLayoutProps(mappedProps);
         } catch (error) {

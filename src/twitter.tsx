@@ -136,6 +136,8 @@ async function handleNewNode(
 
   const shortenedUrl = anchor.href;
   const actionUrl = await resolveTwitterShortenedUrl(shortenedUrl);
+  const actionApi = actionUrl.href.toString();
+  console.log('actionApi', actionApi);
   const interstitialData = isInterstitial(actionUrl);
 
   let actionApiUrl: string | null;
@@ -177,10 +179,10 @@ async function handleNewNode(
   //   return;
   // }
 
-  addMargin(container).replaceChildren(createAction());
+  addMargin(container).replaceChildren(createAction(actionApi));
 }
 
-function createAction() {
+function createAction(actionAPI: string) {
   const container = document.createElement('div');
   container.className = 'dialect-action-root-container';
 
@@ -188,7 +190,10 @@ function createAction() {
 
   actionRoot.render(
     <div onClick={(e) => e.stopPropagation()}>
-      <ActionContainer stylePreset={resolveXStylePreset()} />
+      <ActionContainer
+        stylePreset={resolveXStylePreset()}
+        apiAction={actionAPI}
+      />
     </div>,
   );
   return container;
