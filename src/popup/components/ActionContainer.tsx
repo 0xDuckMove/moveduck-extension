@@ -27,6 +27,10 @@ const ActionContainer = ({
     }>;
   }
 
+  const lastPartIndex = apiAction.lastIndexOf('/');
+  const actionLink = apiAction.substring(0, lastPartIndex + 1);
+  const addressFromLink = apiAction.substring(lastPartIndex + 1) as string;
+
   interface ActionWithoutParameters {
     href: string;
     label: string;
@@ -104,8 +108,7 @@ const ActionContainer = ({
 
       const body = {
         fromAddress: account.address as string,
-        toAddress:
-          '0xe975d15fd30e20768cb5f2dc05d5966c31e235324bb2794e1c49df63c475799e',
+        toAddress: addressFromLink,
       };
 
       const response = await fetch(url, {
@@ -169,11 +172,11 @@ const ActionContainer = ({
 
   useEffect(() => {
     const fetchApiData = async () => {
-      if (1) {
+      if (addressFromLink) {
         try {
-          const response = await fetch(apiAction);
+          const response = await fetch(actionLink);
           const data = await response.json();
-          const baseUrl = new URL(apiAction).origin;
+          const baseUrl = new URL(actionLink).origin;
           const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
           setLayoutProps(mappedProps);
         } catch (error) {
