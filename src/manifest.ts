@@ -44,6 +44,6 @@ export default defineManifest({
       matches: [],
     },
   ],
-  permissions: ['storage', 'activeTab', 'scripting'],
+  permissions: ['storage', 'scripting'],
   host_permissions: ['https://twitter.com/*', 'https://x.com/*'],
 });
