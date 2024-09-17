@@ -14,7 +14,7 @@ run the command
 
 ```shell
 $ cd ActionX-Extension
-$ npm run i
+$ npm i
 $ npm run dev
 ```
 
