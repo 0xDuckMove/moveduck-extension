@@ -8,7 +8,7 @@ export const Header = () => {
         className="absolute right-4 top-4 text-icon-secondary hover:text-icon-primary"
         onClick={() =>
           chrome.tabs.create({
-            url: 'https://www.actionX.com/',
+            url: 'https://www.actionxapt.com/',
           })
         }
       >
