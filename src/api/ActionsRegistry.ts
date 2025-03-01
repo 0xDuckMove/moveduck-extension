@@ -71,6 +71,7 @@ export class ActionsRegistry {
         interstitial,
       ]),
     );
+    console.log(this.websitesByHost);
   }
 
   public lookup(
@@ -185,7 +186,7 @@ export const getExtendedInterstitialState = (
 async function fetchActionsRegistryConfig(): Promise<ActionsRegistryConfig> {
   try {
     const response = await fetch(
-      'https://server.actionxapt.com/api/actions/actions-registry/all',
+      'https://movestack-backend.vercel.app/api/v1/registry',
     );
     console.log(response);
 

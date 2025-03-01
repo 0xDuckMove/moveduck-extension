@@ -7,6 +7,10 @@ import {
 export type InputType = ActionParameterType;
 
 export interface BaseButtonProps {
+  css: {
+    bg: string;
+    color: string;
+  };
   text: string | null;
   loading?: boolean;
   variant?: 'default' | 'success' | 'error';

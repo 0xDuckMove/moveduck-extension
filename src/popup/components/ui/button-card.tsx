@@ -6,20 +6,28 @@ export const Button = ({
   disabled,
   variant = 'default',
   children,
+  bg,
+  text,
 }: {
   onClick: () => void;
   disabled?: boolean;
   variant?: 'success' | 'error' | 'default';
+  bg: string;
+  text: string;
 } & PropsWithChildren) => {
+  console.log('inner css', bg, text);
   return (
     <button
+      style={{
+        backgroundColor: variant == 'default' ? bg : '',
+        color: variant == 'default' ? text : '',
+      }}
       className={clsx(
-        'flex w-full items-center justify-center text-nowrap rounded-button px-4 py-3 text-text font-semibold transition-colors motion-reduce:transition-none',
+        'flex w-full max-w-full items-center justify-center text-nowrap rounded-button px-4 py-3 text-text font-semibold transition-colors motion-reduce:transition-none',
         {
           'bg-button-disabled text-text-button-disabled':
             disabled && variant !== 'success',
-          'bg-button text-text-button hover:bg-button-hover':
-            !disabled && variant !== 'success',
+          'hover:opacity-90': !disabled && variant !== 'success',
           'bg-button-success text-text-button-success': variant === 'success',
         },
       )}

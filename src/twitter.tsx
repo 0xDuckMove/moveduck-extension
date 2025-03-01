@@ -117,10 +117,13 @@ async function handleNewNode(
     linkPreview?.card ?? element,
     Boolean(linkPreview),
   );
+
   if (linkPreview) {
     anchor = linkPreview.anchor;
     container && container.remove();
-    container = linkPreview.card.parentElement as HTMLElement;
+    container = (
+      (linkPreview.card.children[0] as HTMLElement).children[0] as HTMLElement
+    ).querySelectorAll('.dialect-wrapper')[0] as HTMLElement;
   } else {
     if (container) {
       return;
@@ -131,13 +134,12 @@ async function handleNewNode(
       container = getContainerForLink(link.tweetText);
     }
   }
-
   if (!anchor || !container) return;
+  const aTags = anchor.getElementsByTagName('a');
 
-  const shortenedUrl = anchor.href;
+  const shortenedUrl = aTags[4].href;
   const actionUrl = await resolveTwitterShortenedUrl(shortenedUrl);
   const actionApi = actionUrl.href.toString();
-  console.log('actionApi', actionApi);
   const interstitialData = isInterstitial(actionUrl);
 
   let actionApiUrl: string | null;
@@ -227,11 +229,19 @@ function findElementByTestId(element: Element, testId: string) {
 }
 
 function findContainerInTweet(element: Element, searchUp?: boolean) {
-  const message = searchUp
-    ? (element.closest(`[data-testid="tweet"]`) ??
-      element.closest(`[data-testid="messageEntry"]`))
-    : (findElementByTestId(element, 'tweet') ??
-      findElementByTestId(element, 'messageEntry'));
+  // const message = searchUp
+  //   ? (element.closest(`[data-testid="tweet"]`) ??
+  //     element.closest(`[data-testid="messageEntry"]`))
+  //   : (findElementByTestId(element, 'tweet') ??
+  //     findElementByTestId(element, 'messageEntry'));
+  // console.log(
+  //   'message',
+  //   message,
+  //   message && (message.querySelector('.dialect-wrapper') as HTMLElement),
+  //   element.closest(`[data-testid="tweet"]`),
+  //   findElementByTestId(element, 'tweet'),
+  // );
+  const message = element.closest(`[data-testid="tweet"]`);
 
   if (message) {
     return message.querySelector('.dialect-wrapper') as HTMLElement;
@@ -240,13 +250,13 @@ function findContainerInTweet(element: Element, searchUp?: boolean) {
 }
 
 function findLinkPreview(element: Element) {
-  const card = findElementByTestId(element, 'card.wrapper');
+  const card = findElementByTestId(element, 'cellInnerDiv');
   if (!card) {
     return null;
   }
 
   const anchor = card.children[0]?.children[0] as HTMLAnchorElement;
-
+  //anchor is article tag
   return anchor ? { anchor, card } : null;
 }
 
@@ -255,7 +265,6 @@ function findLastLinkInText(element: Element) {
   if (!tweetText) {
     return null;
   }
-
   const links = tweetText.getElementsByTagName('a');
   if (links.length > 0) {
     const anchor = links[links.length - 1] as HTMLAnchorElement;

@@ -48,6 +48,10 @@ const ActionContainer = ({
   const createButton = (action: ActionWithParameters): BaseButtonProps => ({
     text: action.label,
     onClick: () => handleActionClick(action),
+    css: {
+      bg: layoutProps?.css?.bgColor || '',
+      color: layoutProps?.css?.textColor || '',
+    },
   });
 
   function isEmpty(obj: object) {
@@ -71,7 +75,6 @@ const ActionContainer = ({
           if (chrome.runtime.lastError) {
             console.error('Error:', chrome.runtime.lastError);
           } else {
-            console.log('Address:', response);
             chrome.storage.local.set({ address: response });
           }
         },
@@ -121,9 +124,7 @@ const ActionContainer = ({
       });
 
       const result = await response.json();
-      console.log(result);
       const { transaction, message } = result;
-      console.log(transaction);
 
       await signTransaction(transaction);
     } catch (error) {
@@ -143,8 +144,17 @@ const ActionContainer = ({
       (action: Action): action is ActionWithoutParameters =>
         !('parameters' in action) || action.parameters === undefined,
     );
-
+    console.log('css', {
+      bgColor: apiResponse.css.backgroundColor,
+      textColor: apiResponse.css.textColor,
+      buttonBg: apiResponse.css.buttonBg,
+    });
     return {
+      css: {
+        bgColor: apiResponse.css.backgroundColor,
+        textColor: apiResponse.css.textColor,
+        buttonBg: apiResponse.css.buttonBg,
+      },
       stylePreset: stylePreset,
       title: apiResponse.title,
       description: apiResponse.description.trim(),
@@ -178,6 +188,7 @@ const ActionContainer = ({
           const data = await response.json();
           const baseUrl = new URL(actionLink).origin;
           const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
+          console.log(mappedProps, data);
           setLayoutProps(mappedProps);
         } catch (error) {
           console.error('Error fetching API data:', error);
@@ -188,14 +199,12 @@ const ActionContainer = ({
     fetchApiData();
   }, []);
 
-  if (!layoutProps) {
-    return <div>Loading...</div>;
-  }
-
-  return (
+  return layoutProps ? (
     <div className="w-full max-w-md">
       <ActionLayout {...layoutProps} />
     </div>
+  ) : (
+    <div>Loading...</div>
   );
 };
 

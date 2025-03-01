@@ -14,6 +14,7 @@ export function isInterstitial(url: string | URL): IsInterstitialResult {
     const urlObj = new URL(url);
 
     const actionUrl = urlObj.searchParams.get('action');
+    console.log('urlObj', urlObj, actionUrl);
     if (!actionUrl) {
       return { isInterstitial: false };
     }

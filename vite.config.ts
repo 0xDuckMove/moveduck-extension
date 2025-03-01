@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           chunkFileNames: 'assets/chunk-[hash].js',
+          manualChunks: undefined,
         },
       },
     },

@@ -25,6 +25,7 @@ import type {
   BaseInputProps,
 } from '../components/ui/inputs/types';
 import { ExtendedActionState } from '../../api/ActionsRegistry';
+import { Action } from '@dialectlabs/blinks';
 
 type ActionType = ExtendedActionState;
 type ButtonProps = BaseButtonProps;
@@ -56,6 +57,11 @@ const stylePresetClassMap: Record<StylePreset, string> = {
 };
 
 export interface LayoutProps {
+  css?: {
+    bgColor: string;
+    textColor: string;
+    buttonBg: string;
+  };
   stylePreset?: StylePreset;
   image?: string;
   error?: string | null;
@@ -171,7 +177,8 @@ const DisclaimerBlock = ({
 };
 
 export const ActionLayout = ({
-  stylePreset = 'default',
+  stylePreset = 'x-dark',
+  css,
   title,
   description,
   image,
@@ -186,8 +193,14 @@ export const ActionLayout = ({
   success,
 }: LayoutProps) => {
   return (
-    <div className={clsx('blink', stylePresetClassMap[stylePreset])}>
-      <div className="w-full cursor-default overflow-hidden rounded-2xl border border-stroke-primary bg-bg-primary shadow-action">
+    <div className={clsx('blink')}>
+      <div
+        style={{
+          boxShadow: `0 4px 6px #${css?.bgColor || '#fff'}`,
+          backgroundColor: `#${css?.bgColor}`,
+        }}
+        className="w-full cursor-default overflow-hidden rounded-2xl  shadow-action"
+      >
         {image && (
           <Linkable
             url={websiteUrl}
@@ -250,10 +263,10 @@ export const ActionLayout = ({
               )}
             </a>
           </div>
-          <span className="mb-0.5 text-text font-semibold text-text-primary">
+          <span className="mb-0.5 text-text font-semibold  text-[#000]">
             {title}
           </span>
-          <span className="mb-4 whitespace-pre-wrap text-subtext text-text-secondary">
+          <span className="mb-4 whitespace-pre-wrap text-subtext  text-[#000000b7]">
             {description}
           </span>
           {disclaimer && (
@@ -273,7 +286,12 @@ export const ActionLayout = ({
               }
             />
           )}
-          <ActionContent form={form} inputs={inputs} buttons={buttons} />
+          <ActionContent
+            css={css}
+            form={form}
+            inputs={inputs}
+            buttons={buttons}
+          />
           {success && (
             <span className="mt-4 flex justify-center text-subtext text-text-success">
               {success}
@@ -294,7 +312,8 @@ const ActionContent = ({
   form,
   inputs,
   buttons,
-}: Pick<LayoutProps, 'form' | 'buttons' | 'inputs'>) => {
+  css,
+}: Pick<LayoutProps, 'form' | 'buttons' | 'inputs' | 'css'>) => {
   if (form) {
     return <ActionForm form={form} />;
   }
@@ -308,7 +327,13 @@ const ActionContent = ({
               key={index}
               className="flex flex-grow basis-[calc(33.333%-2*4px)]"
             >
-              <ActionButton {...it} />
+              <ActionButton
+                {...it}
+                css={{
+                  color: `#${css?.textColor}`,
+                  bg: `#${css?.buttonBg}`,
+                }}
+              />
             </div>
           ))}
         </div>

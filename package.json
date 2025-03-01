@@ -27,10 +27,12 @@
     "@aptos-labs/wallet-adapter-core": "^4.14.0",
     "@aptos-labs/wallet-adapter-react": "^3.5.10",
     "@dialectlabs/blinks": "^0.7.0",
+    "@types/cors": "^2.8.17",
     "aptos": "^1.21.0",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "postcss-prefix-selector": "^1.16.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
