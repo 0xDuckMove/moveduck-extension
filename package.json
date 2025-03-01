@@ -1,9 +1,9 @@
 {
-  "name": "actionx-twitter-inject",
-  "displayName": "ActionX",
+  "name": "moveduck-extension",
+  "displayName": "Moveduck",
   "version": "0.0.9",
   "author": "actionx",
-  "description": "Enable ActionX on Twitter, with wallet support by APTOS",
+  "description": "Enable Moveduck on Twitter, with wallet support by APTOS",
   "type": "module",
   "license": "MIT",
   "keywords": [
