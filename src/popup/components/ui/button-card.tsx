@@ -9,13 +9,14 @@ export const Button = ({
   bg,
   text,
 }: {
+  success?: boolean;
+  fail?: boolean;
   onClick: () => void;
   disabled?: boolean;
   variant?: 'success' | 'error' | 'default';
   bg: string;
   text: string;
 } & PropsWithChildren) => {
-  console.log('inner css', bg, text);
   return (
     <button
       style={{

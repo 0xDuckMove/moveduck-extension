@@ -8,22 +8,17 @@ export const ActionButton = ({
   loading,
   disabled,
   variant,
+  
   onClick,
 }: BaseButtonProps) => {
   const ButtonContent = () => {
     if (loading)
       return (
-        <span className="flex flex-row items-center justify-center gap-2 text-nowrap">
+        <span className="flex block w-full h-full flex-row items-center justify-center gap-2 text-nowrap">
           {text} <SpinnerDots />
         </span>
       );
-    if (variant === 'success')
-      return (
-        <span className="flex flex-row items-center justify-center gap-2 text-nowrap">
-          {text}
-          <CheckIcon />
-        </span>
-      );
+   
     return text;
   };
 
@@ -31,12 +26,18 @@ export const ActionButton = ({
     <Button
       text={css.color}
       bg={css.bg}
-      onClick={() => onClick()}
+      onClick={() => {
+        if(variant == 'success' || variant == 'error'){
+          console.log('variant', variant)
+          return;
+        }
+        onClick()}}
       disabled={disabled}
       variant={variant}
     >
       <span className="min-w-0 truncate">
         <ButtonContent />
+        {variant == 'success' && <CheckIcon />}
       </span>
     </Button>
   );

@@ -123,7 +123,6 @@ async function handleNewNode(
   if (linkPreview) {
     anchor = linkPreview.anchor;
     container && container.remove();
-    console.log('linkPreview', linkPreview.card);
     const listATags = ((linkPreview.card.children[0] as HTMLElement).children[0] as HTMLElement
   ).getElementsByTagName('a');
     const targetElement = (listATags[listATags.length-2] as HTMLElement)
@@ -131,18 +130,13 @@ async function handleNewNode(
   //  container.style.borderRadius = '12px';
     // parent.removeChild(targetElement);
     // container = parent;
-    console.log('container',  (
-      (linkPreview.card.children[0] as HTMLElement).children[0] as HTMLElement
-    ).getElementsByTagName('a'));
-    console.log('container', container);
-  console.log('anchor', anchor);
+
 
   } else {
     if (container) {
       return;
     }
     const link = findLastLinkInText(element);
-    console.log('link', link);
     if (link) {
       anchor = link.anchor;
       container = getContainerForLink(link.tweetText);
@@ -150,7 +144,7 @@ async function handleNewNode(
   }
   if (!anchor || !container) return;
   const aTags = anchor.getElementsByTagName('a');
-  console.log('aTags', aTags);
+  
   const shortenedUrl = aTags[4].href;
   const actionUrl = await resolveTwitterShortenedUrl(shortenedUrl);
   const actionApi = actionUrl.href.toString();
@@ -169,7 +163,7 @@ async function handleNewNode(
     }
 
     actionApiUrl = interstitialData.decodedActionUrl;
-    console.log('actionApiUrl', actionApiUrl);
+    
   } else {
     const websiteState = getExtendedWebsiteState(actionUrl.toString());
 
@@ -277,9 +271,7 @@ function findLinkPreview(element: Element) {
 }
 
 function findLastLinkInText(element: Element) {
-  console.log('element', element);
   const tweetText = findElementByTestId(element, 'tweetText');
-  console.log('tweetText', tweetText);
   if (!tweetText) {
     return null;
   }

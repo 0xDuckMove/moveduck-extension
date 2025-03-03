@@ -47,7 +47,7 @@ const ActionContainer = ({
 
   const createButton = (action: ActionWithParameters): BaseButtonProps => ({
     text: action.label,
-    onClick: () => handleActionClick(action),
+    onClick: (undefined, success?: () => void, fail?: () => void) => handleActionClick(action, success, fail),
     css: {
       bg: layoutProps?.css?.bgColor || '',
       color: layoutProps?.css?.textColor || '',
@@ -63,8 +63,9 @@ const ActionContainer = ({
     return true;
   }
 
-  const handleActionClick = async (action: Action) => {
+  const handleActionClick = async (action: Action, onSuccess?: () => void, onFailed?: () => void) => {
     const account = await chrome.storage.local.get('address');
+    console.log('account', account);
     if (isEmpty(account) || !account.address) {
       chrome.runtime.sendMessage(
         {
@@ -117,6 +118,7 @@ const ActionContainer = ({
       const response = await fetch(url, {
         method: 'POST',
         headers: {
+          'Access-Control-Allow-Origin': 'true',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
@@ -124,11 +126,18 @@ const ActionContainer = ({
       });
 
       const result = await response.json();
+      console.log('result', result);
       const { transaction, message } = result;
-
-      await signTransaction(transaction);
+      if(!transaction && onFailed) {
+        onFailed()
+        return;
+      }
+      const success = await signTransaction(transaction);
+      console.log('excute success', success);
+      if(success && onSuccess) onSuccess()
     } catch (error) {
       console.error('Error handling action click:', error);
+      onFailed && onFailed()
     }
   };
 
@@ -144,11 +153,7 @@ const ActionContainer = ({
       (action: Action): action is ActionWithoutParameters =>
         !('parameters' in action) || action.parameters === undefined,
     );
-    console.log('css', {
-      bgColor: apiResponse.css.backgroundColor,
-      textColor: apiResponse.css.textColor,
-      buttonBg: apiResponse.css.buttonBg,
-    });
+   
     return {
       css: {
         bgColor: apiResponse.css.backgroundColor,
@@ -165,7 +170,7 @@ const ActionContainer = ({
       buttons: actionsWithoutParameters.map((action: any) => ({
         label: action.label,
         text: action.label,
-        onClick: () => handleActionClick(action),
+        onClick: (success: () => void, fail: () => void) => handleActionClick(action, success, fail),
       })),
       inputs: actionsWithParameters.flatMap((action: any) =>
         action.parameters.map((param: any) => ({
@@ -199,6 +204,7 @@ const ActionContainer = ({
     fetchApiData();
   }, []);
 
+  console.log('layoutProps', layoutProps);
   return layoutProps ? (
     <div className="w-full max-w-md">
       <ActionLayout {...layoutProps} />

@@ -317,6 +317,10 @@ const ActionContent = ({
   if (form) {
     return <ActionForm form={form} />;
   }
+  // active = index+1 (positive is success, negative is fail)
+  const [active, setActive] = useState(-1)
+  const [fail, setFail] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   return (
     <div className="flex flex-col gap-3">
@@ -328,7 +332,20 @@ const ActionContent = ({
               className="flex flex-grow basis-[calc(33.333%-2*4px)]"
             >
               <ActionButton
+                active={active === index}
+                
                 {...it}
+                variant={success ? (active==index ? 'success' : 'default' ): fail? (active == index ? 'error' : 'default') : 'default'}
+                onClick={() =>{
+                  console.log('success')
+                  setActive(index)
+                  it.onClick(undefined, () => {
+                    // setSuccess(true)
+                  }, () => {
+                    console.log('failed')
+                    // setFail(true)
+                  })
+                }}
                 css={{
                   color: `#${css?.textColor}`,
                   bg: `#${css?.buttonBg}`,
@@ -370,6 +387,8 @@ const ActionForm = ({ form }: Required<Pick<LayoutProps, 'form'>>) => {
   const [values, setValues] = useState<Record<string, string | string[]>>(
     buildDefaultFormValues(form.inputs),
   );
+  const [success, setSuccess] = useState(false);
+  const [fail, setFail] = useState(false);
   const [validity, setValidity] = useState<Record<string, boolean>>(
     Object.fromEntries(form.inputs.map((i) => [i.name, false])),
   );
@@ -384,6 +403,13 @@ const ActionForm = ({ form }: Required<Pick<LayoutProps, 'form'>>) => {
 
   const disabled = Object.values(validity).some((v) => !v);
 
+  const onSuccess = () => {
+    setSuccess(true);
+  }
+
+  const onFail = () => {
+    setFail(true);
+  }
   return (
     <div className="flex flex-col gap-3">
       {form.inputs.map((input) => (
@@ -394,9 +420,17 @@ const ActionForm = ({ form }: Required<Pick<LayoutProps, 'form'>>) => {
           onValidityChange={(v) => onValidityChange(input.name, v)}
         />
       ))}
+      {/* create a usestate here to handle button click state */}
       <ActionButton
+        fail={fail}
+        success={success}
+        
         {...form.button}
-        onClick={() => form.button.onClick(values)}
+        onClick={() => {
+          form.button.onClick(undefined, onSuccess,
+          onFail)
+          
+        }}
         disabled={form.button.disabled || disabled}
       />
     </div>

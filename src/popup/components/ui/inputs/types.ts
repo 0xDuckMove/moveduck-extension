@@ -15,7 +15,10 @@ export interface BaseButtonProps {
   loading?: boolean;
   variant?: 'default' | 'success' | 'error';
   disabled?: boolean;
-  onClick: (params?: Record<string, string | string[]>) => void;
+  success?: boolean;
+  fail?: boolean;
+  active?: boolean;
+  onClick: (params?: Record<string, string[] | string>,success?: () => void, fail?: () => void) => void;
 }
 
 export interface BaseInputProps {
