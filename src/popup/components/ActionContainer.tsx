@@ -5,16 +5,22 @@ import { ActionLayout } from '../components/ActionLayout';
 import { aptosClient } from '../../utils';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import { signTransaction } from '../../contentScript';
+import { SERVER } from '../../utils/constants';
+import { saveActionId } from '../../utils/storage';
+import Completed from './completed';
 
 export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
 
 const ActionContainer = ({
   stylePreset = 'default',
   apiAction,
+  actionTracking
 }: {
   stylePreset?: StylePreset;
   apiAction: string;
+  actionTracking: boolean;
 }) => {
+  if(!actionTracking) return <Completed />;
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
 
   interface ActionWithParameters {
@@ -65,7 +71,13 @@ const ActionContainer = ({
 
   const handleActionClick = async (action: Action, onSuccess?: () => void, onFailed?: () => void) => {
     const account = await chrome.storage.local.get('address');
-    console.log('account', account);
+    const actionString = action.href.split(SERVER)[1].split('/')[1];
+    console.log('action', actionString);
+    if(actionString == 'quiz') {
+      const quizId = action.href.split(SERVER)[1].split('/')[3].split('?')[0];
+      if(quizId)
+        await saveActionId(quizId);
+    }
     if (isEmpty(account) || !account.address) {
       chrome.runtime.sendMessage(
         {

@@ -9,14 +9,14 @@ import { ActionAdapter } from './api/ActionConfig';
 import { ActionCallbacksConfig, ObserverOptions } from '@dialectlabs/blinks';
 import { checkSecurity, SecurityLevel } from './shared';
 import {
-  ActionsRegistry,
-  getExtendedActionState,
-  getExtendedInterstitialState,
-  getExtendedWebsiteState,
+  ActionsRegistry
 } from './api/ActionsRegistry';
-import { isInterstitial } from './utils/interstitial-url';
-import { proxify } from './utils/proxify';
-import { ActionsJsonConfig, ActionsURLMapper } from './utils/url-mapper';
+import { SERVER } from './utils/constants';
+import { actionTracking } from './utils/storage';
+import Completed from './popup/components/completed';
+
+//init constants
+
 
 type ObserverSecurityLevel = SecurityLevel;
 
@@ -97,6 +97,7 @@ export function setupTwitterObserver(
   });
 }
 
+
 async function handleNewNode(
   node: Element,
   config: ActionAdapter,
@@ -109,8 +110,6 @@ async function handleNewNode(
     return;
   }
 
-
-
   let anchor;
 
   const linkPreview = findLinkPreview(element);
@@ -119,19 +118,35 @@ async function handleNewNode(
     linkPreview?.card ?? element,
     Boolean(linkPreview),
   );
-
+  let actionApiUrl = '';
+  let targetElement: HTMLElement | undefined = undefined;
+  let actionTrackingResult = true;
   if (linkPreview) {
     anchor = linkPreview.anchor;
-    container && container.remove();
+    // container && container.remove();
     const listATags = ((linkPreview.card.children[0] as HTMLElement).children[0] as HTMLElement
-  ).getElementsByTagName('a');
-    const targetElement = (listATags[listATags.length-2] as HTMLElement)
-   container = targetElement.parentElement as HTMLElement;
-  //  container.style.borderRadius = '12px';
-    // parent.removeChild(targetElement);
-    // container = parent;
+      ).getElementsByTagName('a');
 
+    let actionIdFromHashtash = '';
+    let actionFromHashtash = '';
+    // let targetElement: HTMLElement | undefined = undefined;
+    Array.from(listATags).forEach((aTag) => {
+      if (aTag.href.includes('/hashtag/moveduck')) {
+        actionIdFromHashtash = aTag.innerText.split('_')[2];
+        actionFromHashtash = aTag.innerText.split('_')[1];
+        targetElement = aTag.parentElement as HTMLElement;
+        container =((targetElement.parentElement as HTMLElement).parentElement as HTMLElement).children[1] as HTMLElement;
+      
+      }
+    });
 
+    if(actionFromHashtash == '' && actionIdFromHashtash == '') return;
+
+    actionApiUrl = `${SERVER}/${actionFromHashtash}?id=${dataMapping[parseInt(actionIdFromHashtash)-1]}&buttonBg=FFDA34&bgColor=F4A625&textColor=000/0x2`;
+   
+    actionTrackingResult = await actionTracking(actionFromHashtash, dataMapping[parseInt(actionIdFromHashtash)-1]);
+
+   
   } else {
     if (container) {
       return;
@@ -142,71 +157,50 @@ async function handleNewNode(
       container = getContainerForLink(link.tweetText);
     }
   }
-  if (!anchor || !container) return;
-  const aTags = anchor.getElementsByTagName('a');
+ 
   
-  const shortenedUrl = aTags[4].href;
-  const actionUrl = await resolveTwitterShortenedUrl(shortenedUrl);
-  const actionApi = actionUrl.href.toString();
-  const interstitialData = isInterstitial(actionUrl);
-
-  let actionApiUrl: string | null;
-  if (interstitialData.isInterstitial) {
-    const interstitialState = getExtendedInterstitialState(
-      actionUrl.toString(),
-    );
-
-    if (
-      !checkSecurity(interstitialState, options.securityLevel.interstitials)
-    ) {
-      return;
-    }
-
-    actionApiUrl = interstitialData.decodedActionUrl;
-    
-  } else {
-    const websiteState = getExtendedWebsiteState(actionUrl.toString());
-
-    if (!checkSecurity(websiteState, options.securityLevel.websites)) {
-      return;
-    }
-
-    // const actionsJsonUrl = actionUrl.origin + '/actions.json';
-    // const actionsJson = await fetch(proxify(actionsJsonUrl)).then(
-    //   (res) => res.json() as Promise<ActionsJsonConfig>,
-    // );
-
-    // const actionsUrlMapper = new ActionsURLMapper(actionsJson);
-
-    // actionApiUrl = actionsUrlMapper.mapUrl(actionUrl);
+  if(!container || !targetElement) return;
+  const articleContainer = element.getElementsByTagName('article')[0];
+  // remove default css class (overflow)
+  if (articleContainer) {
+    articleContainer.style.overflow='revert-layer'
+    articleContainer.classList.remove('r-1udh08x')
+    if(articleContainer.classList.contains('r-1udh08x'))
+        articleContainer.classList.replace('r-1udh08x', 'replace');
+    console.log('classlist', articleContainer.classList);
   }
-
-  // const state = actionApiUrl ? getExtendedActionState(actionApiUrl) : null;
-  // if (
-  //   !actionApiUrl ||
-  //   !state ||
-  //   !checkSecurity(state, options.securityLevel.actions)
-  // ) {
-  //   return;
-  // }
-
-  addMargin(container).replaceChildren(createAction(actionApi));
+  addMargin(container).replaceChildren(createAction(actionApiUrl, container.parentElement as HTMLElement, targetElement, actionTrackingResult));
 }
 
-function createAction(actionAPI: string) {
+function createAction(actionAPI: string, parent: HTMLElement, text: HTMLElement, actionTracking: boolean) {
   const container = document.createElement('div');
-  container.className = 'dialect-action-root-container';
-
+  addPopupCss(container);
   const actionRoot = createRoot(container);
-
+  text.onmouseenter = (e) => {
+    container.style.display = 'block';
+    requestAnimationFrame(() => {
+      container.style.opacity = '1';
+      container.style.height = 'auto';
+    });
+  }
+  container.onmouseleave = (e) => {
+    container.style.opacity = '0';
+    // add animation
+    container.addEventListener('transitionend', () => {
+      container.style.height = '0px';
+    }, { once: true });
+  }
+  
   actionRoot.render(
     <div onClick={(e) => e.stopPropagation()}>
       <ActionContainer
+      actionTracking={actionTracking}
         stylePreset={resolveXStylePreset()}
         apiAction={actionAPI}
       />
     </div>,
   );
+  
   return container;
 }
 
@@ -305,3 +299,17 @@ function addMargin(element: HTMLElement) {
   }
   return element;
 }
+
+function addPopupCss(component: HTMLElement) {
+  component.className = 'dialect-action-root-component';
+  component.style.bottom = '100px';
+  component.style.zIndex = '1000';
+  component.style.left = '100px';
+  component.style.width = '512px';
+  component.style.height = '0px';
+  component.style.opacity = '0';
+  component.style.overflow = 'hidden';
+  component.style.transition = 'all 0.4s ease-in-out';
+}
+
+const dataMapping = ['bafkreih3q576toj7g7cubdajfah3w2lmeql5p72jebdhauaiwekgv2fk7a']
