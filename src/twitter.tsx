@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { noop } from './utils/constants';
+import { noop, QUIZ_ACTION } from './utils/constants';
 import ActionContainer from './popup/components/ActionContainer';
 import { StylePreset } from './popup/components/ActionLayout';
 import '@dialectlabs/blinks/index.css';
@@ -14,6 +14,7 @@ import {
 import { SERVER } from './utils/constants';
 import { actionTracking } from './utils/storage';
 import Completed from './popup/components/completed';
+import { parseUrl } from './utils/url-parser';
 
 //init constants
 
@@ -130,21 +131,41 @@ async function handleNewNode(
     let actionIdFromHashtash = '';
     let actionFromHashtash = '';
     // let targetElement: HTMLElement | undefined = undefined;
+    
+    console.log('listATags', Array.from(listATags) as HTMLElement[]);
     Array.from(listATags).forEach((aTag) => {
       if (aTag.href.includes('/hashtag/moveduck')) {
         actionIdFromHashtash = aTag.innerText.split('_')[2];
         actionFromHashtash = aTag.innerText.split('_')[1];
         targetElement = aTag.parentElement as HTMLElement;
         container =((targetElement.parentElement as HTMLElement).parentElement as HTMLElement).children[1] as HTMLElement;
-      
       }
     });
+    // if no actionIdFromHashtash and actionFromHashtash, then get the link from the post
+    if(actionFromHashtash == '' && actionIdFromHashtash == '') {
+      const linkFromPost = Array.from(listATags).find((aTag) => aTag.href.includes('https://t.co'));
+      if(linkFromPost){
+        const url = await resolveTwitterShortenedUrl(linkFromPost.href)
+          if(url){
+            actionApiUrl = url.href;
+            const {action, actionId} = parseUrl(url.href);
+            actionTrackingResult = await actionTracking(action, actionId);
+            const {container: containerFromchild, targetElement: targetElementFromChild} = containerFromChild(linkFromPost);
+            container = containerFromchild;
+            targetElement = targetElementFromChild;
+          }
+      }
+    }else {
+      actionApiUrl = `${SERVER}/${actionFromHashtash}/hashtag?id=${actionIdFromHashtash}/0x2`;
+      actionTrackingResult = await actionTracking(actionFromHashtash, dataMapping[parseInt(actionIdFromHashtash)-1]);
 
-    if(actionFromHashtash == '' && actionIdFromHashtash == '') return;
+    };
 
-    actionApiUrl = `${SERVER}/${actionFromHashtash}?id=${dataMapping[parseInt(actionIdFromHashtash)-1]}&buttonBg=FFDA34&bgColor=F4A625&textColor=000/0x2`;
+    console.log('actionApiUrl', actionApiUrl);
+    console.log('container', container);
+    console.log('target', targetElement)
+
    
-    actionTrackingResult = await actionTracking(actionFromHashtash, dataMapping[parseInt(actionIdFromHashtash)-1]);
 
    
   } else {
@@ -309,6 +330,13 @@ function addPopupCss(component: HTMLElement) {
   component.style.opacity = '0';
   component.style.overflow = 'hidden';
   component.style.transition = 'all 0.4s ease-in-out';
+}
+
+function containerFromChild(aTag: HTMLAnchorElement) {
+  const targetElement = aTag.parentElement as HTMLElement;
+  const parent = ((targetElement.parentElement as HTMLElement).parentElement as HTMLElement).children[1] as HTMLElement;
+  const container = parent.getElementsByClassName('dialect-wrapper')[0] as HTMLElement;
+  return {container, targetElement};
 }
 
 const dataMapping = ['bafkreih3q576toj7g7cubdajfah3w2lmeql5p72jebdhauaiwekgv2fk7a']
