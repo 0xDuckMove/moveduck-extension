@@ -26,6 +26,7 @@ import type {
 } from '../components/ui/inputs/types';
 import { ExtendedActionState } from '../../api/ActionsRegistry';
 import { Action } from '@dialectlabs/blinks';
+import { useActionContext } from './hooks/context';
 
 type ActionType = ExtendedActionState;
 type ButtonProps = BaseButtonProps;
@@ -321,7 +322,8 @@ const ActionContent = ({
   const [active, setActive] = useState(-1)
   const [fail, setFail] = useState(false)
   const [success, setSuccess] = useState(false)
-
+  const {isActionDone, setIsActionDone} = useActionContext();
+  console.log('context', isActionDone, setIsActionDone)
   return (
     <div className="flex flex-col gap-3">
       {buttons && buttons.length > 0 && (
@@ -337,14 +339,16 @@ const ActionContent = ({
                 {...it}
                 variant={success ? (active==index ? 'success' : 'default' ): fail? (active == index ? 'error' : 'default') : 'default'}
                 onClick={() =>{
-                  console.log('success')
                   setActive(index)
                   it.onClick(undefined, () => {
-                    // setSuccess(true)
+                    console.log('quiz success')
+                    setIsActionDone(true)
                   }, () => {
-                    console.log('failed')
+                    console.log('quiz failed')
                     // setFail(true)
-                  })
+                    setIsActionDone(true)
+
+                  }, )
                 }}
                 css={{
                   color: `#${css?.textColor}`,

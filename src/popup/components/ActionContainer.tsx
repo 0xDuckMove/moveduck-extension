@@ -1,28 +1,32 @@
 import { BaseButtonProps } from '../components/ui/inputs/types';
 import { LayoutProps } from '../components/ActionLayout';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { ActionLayout } from '../components/ActionLayout';
 import { aptosClient } from '../../utils';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import { signTransaction } from '../../contentScript';
-import { SERVER } from '../../utils/constants';
-import { saveActionId } from '../../utils/storage';
+import { QUIZ_ACTION, SERVER } from '../../utils/constants';
+import { actionTracking, saveActionId } from '../../utils/storage';
 import Completed from './completed';
+import { parsePostUrl, parseUrl } from '../../utils/url-parser';
+import { ActionContext } from './hooks/context';
 
 export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
 
 const ActionContainer = ({
   stylePreset = 'default',
-  apiAction,
-  actionTracking
+  apiAction
 }: {
   stylePreset?: StylePreset;
   apiAction: string;
-  actionTracking: boolean;
-}) => {
-  if(!actionTracking) return <Completed />;
-  const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
 
+}) => {
+  const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
+  const [isActionDoneBefore, setIsActionDoneBefore] = useState(false);
+  const [isActionDone, setIsActionDone] = useState(false);
+  // create context
+  
+  
   interface ActionWithParameters {
     href: string;
     label: string;
@@ -32,6 +36,23 @@ const ActionContainer = ({
       required: boolean;
     }>;
   }
+  useEffect(() => {
+    const checkActionTracking = async () => {
+      const {action, actionId} = parseUrl(apiAction);
+      const trackingResult = await actionTracking(action, actionId);
+      console.log('trackingResult', trackingResult);
+      if(action == QUIZ_ACTION && !trackingResult){
+        setIsActionDoneBefore(true);
+      }
+      console.log('redender', isActionDoneBefore)
+      console.log('--action container', action, actionId);
+    };
+    checkActionTracking();
+  }, [])
+
+  useEffect(() => {
+    console.log('isDone', isActionDone)
+  }, [isActionDone])
 
   const lastPartIndex = apiAction.lastIndexOf('/');
   const actionLink = apiAction.substring(0, lastPartIndex + 1);
@@ -53,7 +74,7 @@ const ActionContainer = ({
 
   const createButton = (action: ActionWithParameters): BaseButtonProps => ({
     text: action.label,
-    onClick: (undefined, success?: () => void, fail?: () => void) => handleActionClick(action, success, fail),
+    onClick: (undefined, success?: () => void, fail?: () => void ) =>  handleActionClick(action, success, fail),
     css: {
       bg: layoutProps?.css?.bgColor || '',
       color: layoutProps?.css?.textColor || '',
@@ -71,13 +92,16 @@ const ActionContainer = ({
 
   const handleActionClick = async (action: Action, onSuccess?: () => void, onFailed?: () => void) => {
     const account = await chrome.storage.local.get('address');
-    const actionString = action.href.split(SERVER)[1].split('/')[1];
-    console.log('action', actionString);
-    if(actionString == 'quiz') {
-      const quizId = action.href.split(SERVER)[1].split('/')[3].split('?')[0];
-      if(quizId)
-        await saveActionId(quizId);
-    }
+
+    const {action: actionString, actionId} = parsePostUrl(action.href);
+    console.log('action', actionString, actionId, action.href);
+    // const actionString = action.href.split(SERVER)[1].split('/')[1];
+    // console.log('action', actionString);
+    // if(actionString == 'quiz') {
+    //   const quizId = action.href.split(SERVER)[1].split('/')[3].split('?')[0];
+      if(actionId!='')
+        await saveActionId(actionId);
+    // }
     if (isEmpty(account) || !account.address) {
       chrome.runtime.sendMessage(
         {
@@ -144,9 +168,14 @@ const ActionContainer = ({
         onFailed()
         return;
       }
+      console.log('transction', transaction)
       const success = await signTransaction(transaction);
       console.log('excute success', success);
-      if(success && onSuccess) onSuccess()
+      if(onSuccess) {  
+        onSuccess()
+        return;
+      }
+      onFailed && onFailed()
     } catch (error) {
       console.error('Error handling action click:', error);
       onFailed && onFailed()
@@ -182,9 +211,11 @@ const ActionContainer = ({
       buttons: actionsWithoutParameters.map((action: any) => ({
         label: action.label,
         text: action.label,
+        
         onClick: (success: () => void, fail: () => void) => handleActionClick(action, success, fail),
+
       })),
-      inputs: actionsWithParameters.flatMap((action: any) =>
+      inputs: actionsWithParameters.flatMap((action: any) =>{
         action.parameters.map((param: any) => ({
           type: 'text',
           name: param.name,
@@ -192,7 +223,7 @@ const ActionContainer = ({
           required: param.required,
           disabled: false,
           button: createButton(action),
-        })),
+        }))},
       ),
     };
   };
@@ -217,13 +248,22 @@ const ActionContainer = ({
   }, []);
 
   console.log('layoutProps', layoutProps);
+  if(isActionDone || isActionDoneBefore) return <Completed />;
   return layoutProps ? (
-    <div className="w-full max-w-md">
-      <ActionLayout {...layoutProps} />
-    </div>
+    
+    <ActionContext.Provider value={{ isActionDone, setIsActionDone }}>
+      <div className="w-full max-w-md">
+        <ActionLayout {...layoutProps} />
+      </div>
+    </ActionContext.Provider>
   ) : (
     <div>Loading...</div>
   );
 };
 
 export default ActionContainer;
+
+
+
+
+

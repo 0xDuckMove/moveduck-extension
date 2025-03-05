@@ -194,7 +194,6 @@ function createAction(actionAPI: string, parent: HTMLElement, text: HTMLElement,
   actionRoot.render(
     <div onClick={(e) => e.stopPropagation()}>
       <ActionContainer
-      actionTracking={actionTracking}
         stylePreset={resolveXStylePreset()}
         apiAction={actionAPI}
       />
