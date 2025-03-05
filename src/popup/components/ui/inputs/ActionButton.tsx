@@ -14,7 +14,7 @@ export const ActionButton = ({
   const ButtonContent = () => {
     if (loading)
       return (
-        <span className="flex block w-full h-full flex-row items-center justify-center gap-2 text-nowrap">
+        <span className="flex w-full h-full flex-row items-center justify-center gap-2 text-nowrap">
           {text} <SpinnerDots />
         </span>
       );
@@ -35,7 +35,7 @@ export const ActionButton = ({
       disabled={disabled}
       variant={variant}
     >
-      <span className="min-w-0 truncate">
+      <span className="min-w-0 truncate text-[14px] font-[500]">
         <ButtonContent />
         {variant == 'success' && <CheckIcon />}
       </span>

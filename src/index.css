@@ -57,14 +57,17 @@ body {
   --blink-border-radius-rounded-lg: 0.25rem;
   --blink-border-radius-rounded-xl: 0.5rem;
   --blink-border-radius-rounded-2xl: 1rem;
-  --blink-border-radius-rounded-button: 0.5rem;
+  --blink-border-radius-rounded-button: 2rem;
   --blink-border-radius-rounded-input: 0.5rem;
   --blink-border-radius-rounded-input-standalone: 0.5rem;
 }
 
 @layer base {
   .blink {
+    display: flex;
+    justify-content: center;
     container-type: inline-size;
+    background-color: #ffffff00;
   }
 
   .blink input[type='date']::-webkit-inner-spin-button,

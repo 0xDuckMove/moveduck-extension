@@ -194,30 +194,34 @@ export const ActionLayout = ({
   success,
 }: LayoutProps) => {
   return (
-    <div className={clsx('blink')}>
+    <div style={{
+      backgroundColor: "#ffffff00",
+      marginTop: "16px",
+      marginBottom: "16px",
+    }} className={clsx('blink')}>
       <div
         style={{
           boxShadow: `0 4px 6px #${css?.bgColor || '#fff'}`,
           backgroundColor: `#${css?.bgColor}`,
         }}
-        className="w-full cursor-default overflow-hidden rounded-2xl  shadow-action"
+        className="p-6 w-[368px] flex flex-col gap-[18px] cursor-default overflow-hidden rounded-[20px]  shadow-action" // ##1 
       >
         {image && (
           <Linkable
             url={websiteUrl}
-            className="block max-h-[100cqw] overflow-y-hidden px-5 pt-5"
+            className="block max-h-[100cqw] overflow-y-hidden" // ##2
           >
             <img
               className={clsx(
-                'aspect-auto w-full rounded-xl object-cover object-center',
+                'aspect-auto w-full h-[265px] rounded-[12px] object-cover object-center',
               )}
               src={image}
               alt="action-image"
             />
           </Linkable>
         )}
-        <div className="flex flex-col p-5">
-          <div className="mb-2 flex items-center gap-2">
+        <div className="flex flex-col">
+          {/* <div className="mb-2 flex items-center gap-2"> ##3
             {websiteUrl && (
               <a
                 href={websiteUrl}
@@ -263,11 +267,11 @@ export const ActionLayout = ({
                 />
               )}
             </a>
-          </div>
+          </div> */}
           <span className="mb-0.5 text-text font-semibold  text-[#000]">
             {title}
           </span>
-          <span className="mb-4 whitespace-pre-wrap text-subtext  text-[#000000b7]">
+          <span className="mb-4 whitespace-pre-wrap text-subtext  text-[#000]">
             {description}
           </span>
           {disclaimer && (
@@ -327,40 +331,39 @@ const ActionContent = ({
   return (
     <div className="flex flex-col gap-3">
       {buttons && buttons.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          {buttons?.map((it, index) => (
-            <div
-              key={index}
-              className="flex flex-grow basis-[calc(33.333%-2*4px)]"
-            >
-              <ActionButton
-                active={active === index}
-                
-                {...it}
-                variant={success ? (active==index ? 'success' : 'default' ): fail? (active == index ? 'error' : 'default') : 'default'}
-                onClick={() =>{
-                  setActive(index)
-                  it.onClick(undefined, () => {
-                    console.log('quiz success')
-                    setIsActionDone(true)
-                  }, () => {
-                    console.log('quiz failed')
-                    // setFail(true)
-                    setIsActionDone(true)
-
-                  }, )
-                }}
-                css={{
-                  color: `#${css?.textColor}`,
-                  bg: `#${css?.buttonBg}`,
-                }}
-              />
-            </div>
-          ))}
+      <div className="grid grid-cols-2 gap-2">
+        {buttons?.map((it, index) => (
+        <div key={index} className="flex justify-center">
+          <ActionButton
+          active={active === index}
+          {...it}
+          variant={success ? (active == index ? 'success' : 'default') : fail ? (active == index ? 'error' : 'default') : 'default'}
+          onClick={() => {
+            setActive(index);
+            it.onClick(
+            undefined,
+            () => {
+              console.log('quiz success');
+              setIsActionDone(true);
+            },
+            () => {
+              console.log('quiz failed');
+              setIsActionDone(true);
+            },
+            );
+          }}
+          css={{
+            color: `#${css?.textColor}`,
+            bg: `#${css?.buttonBg}`,
+          }}
+          // className="w-full"
+          />
         </div>
+        ))}
+      </div>
       )}
       {inputs?.map((input) => (
-        <ActionInputFactory key={input.name} {...input} />
+      <ActionInputFactory key={input.name} {...input} />
       ))}
     </div>
   );

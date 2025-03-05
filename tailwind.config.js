@@ -79,8 +79,8 @@ export default {
     extend: {
       fontSize: {
         // assuming twitter font size base - 15px
-        text: ['1rem', '1.2rem'],
-        subtext: ['0.867rem', '1.067rem'],
+        text: ['1.6rem', '1.8rem'],
+        subtext: ['0.8rem', '1.067rem'],
         caption: ['0.73333rem', '0.93333rem'],
         highlight: ['1.5rem', '2rem'],
       },
