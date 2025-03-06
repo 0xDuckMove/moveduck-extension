@@ -8,7 +8,7 @@ import { signTransaction } from '../../contentScript';
 import { QUIZ_ACTION, SERVER } from '../../utils/constants';
 import { actionTracking, saveActionId } from '../../utils/storage';
 import Completed from './completed';
-import { parsePostUrl, parseUrl } from '../../utils/url-parser';
+import { parsePostUrl, parseUrl, parseUrlFromHashtag } from '../../utils/url-parser';
 import { ActionContext } from './hooks/context';
 
 export type StylePreset = 'default' | 'x-dark' | 'x-light' | 'custom';
@@ -39,15 +39,31 @@ const ActionContainer = ({
   }
   useEffect(() => {
     const checkActionTracking = async () => {
-      const {action, actionId} = parseUrl(apiAction);
-      const trackingResult = await actionTracking(action, actionId);
+      console.log(apiAction)
+      let {action, actionId} = {action: '', actionId:''};
+      let parsed = {action: '', actionId: ''};
+      if(!apiAction.includes('hashtag')) {
+         parsed = parseUrl(apiAction);
+      }else {
+        parsed = parseUrlFromHashtag(apiAction);
+      }
+      action = parsed.action;
+      actionId = parsed.actionId;
+      const trackingResult = await actionTracking(action, actionId)
+
+
+      console.log('actioncontainer trackingResult', trackingResult);
+      console.log('actioncontainer actioncontainer', apiAction, action, actionId);
+      // const {action, actionId} = parse
       setCurrentAction(action)
-      console.log('trackingResult', trackingResult);
+      console.log('actioncontainer trackingResult', trackingResult);
       if(action == QUIZ_ACTION && !trackingResult){
         setIsActionDoneBefore(true);
       }
-      console.log('redender', isActionDoneBefore)
-      console.log('--action container', action, actionId);
+      console.log('actioncontainer redender', isActionDoneBefore)
+      console.log('actioncontainer --action container', action, actionId);
+
+
     };
     checkActionTracking();
   }, [])

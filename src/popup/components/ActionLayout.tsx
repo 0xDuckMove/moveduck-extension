@@ -327,7 +327,7 @@ const ActionContent = ({
   const [fail, setFail] = useState(false)
   const [success, setSuccess] = useState(false)
   const {isActionDone, setIsActionDone, currentAction} = useActionContext();
-  console.log('context', isActionDone, setIsActionDone)
+  console.log('current action', currentAction)
   return (
     <div className="flex flex-col gap-3">
       {buttons && buttons.length > 0 && (

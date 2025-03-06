@@ -1,6 +1,7 @@
 import { QUIZ_ACTION,QUIZ_STORAGE_KEY } from "./constants";
 
 export async function actionTracking(action: string, actionId: string): Promise<boolean> {
+  console.log('actionTracking', action, actionId);
     try {
     if(action == QUIZ_ACTION) {
       const quizStorage = localStorage.getItem(QUIZ_STORAGE_KEY);

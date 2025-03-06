@@ -132,13 +132,13 @@ async function handleNewNode(
     let actionFromHashtash = '';
     // let targetElement: HTMLElement | undefined = undefined;
     
-    console.log('listATags', Array.from(listATags) as HTMLElement[]);
     Array.from(listATags).forEach((aTag) => {
       if (aTag.href.includes('/hashtag/moveduck')) {
         actionIdFromHashtash = aTag.innerText.split('_')[2];
         actionFromHashtash = aTag.innerText.split('_')[1];
         targetElement = aTag.parentElement as HTMLElement;
         container =((targetElement.parentElement as HTMLElement).parentElement as HTMLElement).children[1] as HTMLElement;
+        
       }
     });
     // if no actionIdFromHashtash and actionFromHashtash, then get the link from the post
@@ -148,7 +148,7 @@ async function handleNewNode(
         const url = await resolveTwitterShortenedUrl(linkFromPost.href)
           if(url){
             actionApiUrl = url.href;
-            const {action, actionId} = parseUrl(url.href);
+            const {action, actionId} = parseUrl(url.href)
             actionTrackingResult = await actionTracking(action, actionId);
             const {container: containerFromchild, targetElement: targetElementFromChild} = containerFromChild(linkFromPost);
             container = containerFromchild;
@@ -158,12 +158,9 @@ async function handleNewNode(
     }else {
       actionApiUrl = `${SERVER}/${actionFromHashtash}/hashtag?id=${actionIdFromHashtash}/0x2`;
       actionTrackingResult = await actionTracking(actionFromHashtash, dataMapping[parseInt(actionIdFromHashtash)-1]);
-
     };
 
-    console.log('actionApiUrl', actionApiUrl);
-    console.log('container', container);
-    console.log('target', targetElement)
+ 
 
    
 
@@ -188,7 +185,6 @@ async function handleNewNode(
     articleContainer.classList.remove('r-1udh08x')
     if(articleContainer.classList.contains('r-1udh08x'))
         articleContainer.classList.replace('r-1udh08x', 'replace');
-    console.log('classlist', articleContainer.classList);
   }
   addMargin(container).replaceChildren(createAction(actionApiUrl, container.parentElement as HTMLElement, targetElement, actionTrackingResult));
 }

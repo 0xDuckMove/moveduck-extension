@@ -11,6 +11,15 @@ export function parseUrl(url: string): {action: string, actionId: string} {
 }
 
 
+export function parseUrlFromHashtag(url: string): {action: string, actionId: string} {
+  const actionString = url.split(SERVER)[1].split('/')[1]
+      if(actionString == 'quiz') {
+        const quizId = url.split(SERVER)[1].split('/')[2].split('=')[1];
+          return {action: actionString, actionId: quizId};
+      }
+      return {action: actionString, actionId: ''};
+}
+
 export function parsePostUrl(url: string): {action: string, actionId: string} {
    const actionString = url.split(SERVER)[1].split('/')[1];
     console.log('action', actionString);
@@ -19,4 +28,14 @@ export function parsePostUrl(url: string): {action: string, actionId: string} {
       return {action: actionString, actionId: quizId};
     }
     return {action: actionString, actionId: ''};
+}
+
+export function parseUnknowUrl(apiAction: string):{action: string, actionId: string}   {
+  let parsed = {action: '', actionId: ''};
+      if(!apiAction.includes('hashtag')) {
+         parsed = parseUrl(apiAction);
+      }else {
+        parsed = parseUrlFromHashtag(apiAction);
+      }
+      return parsed;
 }
