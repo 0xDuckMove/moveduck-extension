@@ -1,6 +1,8 @@
 import { createContext, useContext } from "react";
 
 export const ActionContext = createContext<{
+  currentAction: string;
+  setCurrentAction: React.Dispatch<React.SetStateAction<string>>;
     isActionDone: boolean;
     setIsActionDone: React.Dispatch<React.SetStateAction<boolean>>;
   } | null>(null);

@@ -326,7 +326,7 @@ const ActionContent = ({
   const [active, setActive] = useState(-1)
   const [fail, setFail] = useState(false)
   const [success, setSuccess] = useState(false)
-  const {isActionDone, setIsActionDone} = useActionContext();
+  const {isActionDone, setIsActionDone, currentAction} = useActionContext();
   console.log('context', isActionDone, setIsActionDone)
   return (
     <div className="flex flex-col gap-3">
@@ -344,11 +344,13 @@ const ActionContent = ({
             undefined,
             () => {
               console.log('quiz success');
-              setIsActionDone(true);
+              if(currentAction == 'quiz')
+                setIsActionDone(true);
             },
             () => {
               console.log('quiz failed');
-              setIsActionDone(true);
+              if(currentAction == 'quiz')
+                setIsActionDone(true);
             },
             );
           }}

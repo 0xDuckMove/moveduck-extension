@@ -24,6 +24,7 @@ const ActionContainer = ({
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
   const [isActionDoneBefore, setIsActionDoneBefore] = useState(false);
   const [isActionDone, setIsActionDone] = useState(false);
+  const [currentAction, setCurrentAction] = useState('');
   // create context
   
   
@@ -40,6 +41,7 @@ const ActionContainer = ({
     const checkActionTracking = async () => {
       const {action, actionId} = parseUrl(apiAction);
       const trackingResult = await actionTracking(action, actionId);
+      setCurrentAction(action)
       console.log('trackingResult', trackingResult);
       if(action == QUIZ_ACTION && !trackingResult){
         setIsActionDoneBefore(true);
@@ -190,11 +192,14 @@ const ActionContainer = ({
       isActionWithParameters,
     );
 
+    
     const actionsWithoutParameters = apiResponse.links.actions.filter(
       (action: Action): action is ActionWithoutParameters =>
         !('parameters' in action) || action.parameters === undefined,
     );
-   
+    
+    console.log('actionsWithParameters', actionsWithoutParameters, '---', apiResponse);
+    
     return {
       css: {
         bgColor: apiResponse.css.backgroundColor,
@@ -236,6 +241,7 @@ const ActionContainer = ({
           const data = await response.json();
           const baseUrl = new URL(actionLink).origin;
           const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
+          console.log('mappedProps', mappedProps);
           console.log(mappedProps, data);
           setLayoutProps(mappedProps);
         } catch (error) {
@@ -251,7 +257,7 @@ const ActionContainer = ({
   if(isActionDone || isActionDoneBefore) return <Completed />;
   return layoutProps ? (
     
-    <ActionContext.Provider value={{ isActionDone, setIsActionDone }}>
+    <ActionContext.Provider value={{ isActionDone, setIsActionDone, currentAction, setCurrentAction }}>
       <div className="w-full max-w-md">
         <ActionLayout {...layoutProps} />
       </div>
