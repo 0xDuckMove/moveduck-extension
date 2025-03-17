@@ -193,6 +193,8 @@ export const ActionLayout = ({
   error,
   success,
 }: LayoutProps) => {
+  const imagePath = chrome.runtime.getURL("public/img/exclude-icon.png");
+  console.log(imagePath); // Check if it resolves correctly
   return (
     <div style={{
       backgroundColor: "#ffffff00",
@@ -201,10 +203,12 @@ export const ActionLayout = ({
     }} className={clsx('blink')}>
       <div
         style={{
-          boxShadow: `0 4px 6px #${css?.bgColor || '#fff'}`,
-          backgroundColor: `#${css?.bgColor}`,
+          // boxShadow: `0 4px 6px #${css?.bgColor || '#fff'}`,
+          // backgroundColor: `#${css?.bgColor}`,
+          boxShadow: `0 4px 6px #FFF6DE`,
+          backgroundColor: `#FFF6DE`,
         }}
-        className="p-6 w-[368px] flex flex-col gap-[18px] cursor-default overflow-hidden rounded-[20px]  shadow-action" // ##1 
+        className="p-[2px] w-[313px] flex flex-col gap-[18px] cursor-default overflow-hidden rounded-[24px]  shadow-action" // ##1 
       >
         {image && (
           <Linkable
@@ -213,14 +217,15 @@ export const ActionLayout = ({
           >
             <img
               className={clsx(
-                'aspect-auto w-full h-[265px] rounded-[12px] object-cover object-center',
+                'aspect-auto w-full h-[265px] rounded-[23px] object-cover object-center',
               )}
               src={image}
               alt="action-image"
             />
           </Linkable>
         )}
-        <div className="flex flex-col">
+        <div className="flex flex-col rounded-t-[30px] z-10 bg-[#FFF6DE] relative p-4 mt-[-56px]">
+          {/* <img className="absolute right-0 top-0" src="chrome.runtime.getURL('public/img/exclude-icon.png')" alt="icon" /> */}
           {/* <div className="mb-2 flex items-center gap-2"> ##3
             {websiteUrl && (
               <a
@@ -268,12 +273,12 @@ export const ActionLayout = ({
               )}
             </a>
           </div> */}
-          <span className="mb-0.5 text-text font-semibold  text-[#000]">
+          <span className="mb-0.5 text-[24px] font-[500]  text-[#000]">
             {title}
           </span>
-          <span className="mb-4 whitespace-pre-wrap text-subtext  text-[#000]">
+            <span className="mb-4 whitespace-pre-wrap text-[12px] text-[#000000b3]">
             {description}
-          </span>
+            </span>
           {disclaimer && (
             <DisclaimerBlock
               className="mb-4"
@@ -313,6 +318,8 @@ export const ActionLayout = ({
   );
 };
 
+const colors = ['#D1F265', '#FFDA77', '#A4FFF9','#B5B4FF']
+
 const ActionContent = ({
   form,
   inputs,
@@ -331,7 +338,7 @@ const ActionContent = ({
   return (
     <div className="flex flex-col gap-3">
       {buttons && buttons.length > 0 && (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {buttons?.map((it, index) => (
         <div key={index} className="flex justify-center">
           <ActionButton
@@ -355,8 +362,10 @@ const ActionContent = ({
             );
           }}
           css={{
-            color: `#${css?.textColor}`,
-            bg: `#${css?.buttonBg}`,
+            // color: `#${css?.textColor}`,
+            // bg: `#${css?.buttonBg}`,
+            color: '#000',
+            bg: colors[index],
           }}
           // className="w-full"
           />
