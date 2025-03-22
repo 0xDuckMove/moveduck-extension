@@ -1,5 +1,5 @@
 import { BaseButtonProps } from '../components/ui/inputs/types';
-import { LayoutProps } from '../components/ActionLayout';
+import { LayoutProps, STYLES } from '../components/ActionLayout';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ActionLayout } from '../components/ActionLayout';
 import { aptosClient } from '../../utils';
@@ -89,14 +89,11 @@ const ActionContainer = ({
   ): action is ActionWithParameters => {
     return 'parameters' in action && action.parameters !== undefined;
   };
-
+  const style = STYLES[layoutProps?.styleId || 0];
   const createButton = (action: ActionWithParameters): BaseButtonProps => ({
     text: action.label,
     onClick: (undefined, success?: () => void, fail?: () => void ) =>  handleActionClick(action, success, fail),
-    css: {
-      bg: layoutProps?.css?.bgColor || '',
-      color: layoutProps?.css?.textColor || '',
-    },
+    css: style.buttonsStyle[0],
   });
 
   function isEmpty(obj: object) {
@@ -217,11 +214,7 @@ const ActionContainer = ({
     console.log('actionsWithParameters', actionsWithoutParameters, '---', apiResponse);
     
     return {
-      css: {
-        bgColor: apiResponse.css.backgroundColor,
-        textColor: apiResponse.css.textColor,
-        buttonBg: apiResponse.css.buttonBg,
-      },
+      styleId: apiResponse.styleId,
       stylePreset: stylePreset,
       title: apiResponse.title,
       description: apiResponse.description.trim(),

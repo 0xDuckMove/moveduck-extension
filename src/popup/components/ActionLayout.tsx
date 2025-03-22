@@ -23,6 +23,7 @@ import { ActionTextArea } from '../components/ui/inputs/ActionTextArea';
 import type {
   BaseButtonProps,
   BaseInputProps,
+  TStyle,
 } from '../components/ui/inputs/types';
 import { ExtendedActionState } from '../../api/ActionsRegistry';
 import { Action } from '@dialectlabs/blinks';
@@ -63,6 +64,7 @@ export interface LayoutProps {
     textColor: string;
     buttonBg: string;
   };
+  styleId: number;
   stylePreset?: StylePreset;
   image?: string;
   error?: string | null;
@@ -179,6 +181,7 @@ const DisclaimerBlock = ({
 
 export const ActionLayout = ({
   stylePreset = 'x-dark',
+  styleId,
   css,
   title,
   description,
@@ -193,8 +196,10 @@ export const ActionLayout = ({
   error,
   success,
 }: LayoutProps) => {
+
+  const style = STYLES[styleId];
   const imagePath = chrome.runtime.getURL("public/img/exclude-icon.png");
-  console.log(imagePath); // Check if it resolves correctly
+  console.log("Actionlayout", style)
   return (
     <div style={{
       backgroundColor: "#ffffff00",
@@ -203,12 +208,13 @@ export const ActionLayout = ({
     }} className={clsx('blink')}>
       <div
         style={{
-          // boxShadow: `0 4px 6px #${css?.bgColor || '#fff'}`,
-          // backgroundColor: `#${css?.bgColor}`,
-          boxShadow: `0 4px 6px #FFF6DE`,
-          backgroundColor: `#FFF6DE`,
+          // boxShadow: `0 4px 6px ${style.backgroundColor}`,
+          backgroundColor: style.backgroundColor,
+          borderBottomLeftRadius: style.containerStyle.borderRadius,
+          borderBottomRightRadius: style.containerStyle.borderRadius,
+         
         }}
-        className="p-[2px] w-[313px] flex flex-col gap-[18px] cursor-default overflow-hidden rounded-[24px]  shadow-action" // ##1 
+        className={`${style.backgroundColor!="#fff" && style.backgroundColor!="#c7bcbc80" && 'p-[2px]'} w-[313px] flex flex-col gap-[18px] cursor-default overflow-hidden rounded-t-[24px]  shadow-action`} // ##1 
       >
         {image && (
           <Linkable
@@ -216,6 +222,7 @@ export const ActionLayout = ({
             className="block max-h-[100cqw] overflow-y-hidden" // ##2
           >
             <img
+            style={{objectFit: style.imageObjectStyle}}
               className={clsx(
                 'aspect-auto w-full h-[265px] rounded-[23px] object-cover object-center',
               )}
@@ -224,59 +231,20 @@ export const ActionLayout = ({
             />
           </Linkable>
         )}
-        <div className="flex flex-col rounded-t-[30px] z-10 bg-[#FFF6DE] relative p-4 mt-[-56px]">
-          {/* <img className="absolute right-0 top-0" src="chrome.runtime.getURL('public/img/exclude-icon.png')" alt="icon" /> */}
-          {/* <div className="mb-2 flex items-center gap-2"> ##3
-            {websiteUrl && (
-              <a
-                href={websiteUrl}
-                target="_blank"
-                className="group inline-flex items-center truncate text-subtext hover:cursor-pointer"
-                rel="noopener noreferrer"
-              >
-                <LinkIcon className="mr-2 text-icon-primary transition-colors group-hover:text-icon-primary-hover motion-reduce:transition-none" />
-                <span className="text-text-link transition-colors group-hover:text-text-link-hover group-hover:underline motion-reduce:transition-none">
-                  {websiteText ?? websiteUrl}
-                </span>
-              </a>
-            )}
-            {websiteText && !websiteUrl && (
-              <span className="inline-flex items-center truncate text-subtext text-text-link">
-                {websiteText}
-              </span>
-            )}
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center"
-            >
-              {type === 'malicious' && (
-                <Badge
-                  variant="error"
-                  icon={<ExclamationShieldIcon width={13} height={13} />}
-                >
-                  Blocked
-                </Badge>
-              )}
-              {type === 'trusted' && (
-                <Badge
-                  variant="default"
-                  icon={<InfoShieldIcon width={13} height={13} />}
-                />
-              )}
-              {type === 'unknown' && (
-                <Badge
-                  variant="warning"
-                  icon={<InfoShieldIcon width={13} height={13} />}
-                />
-              )}
-            </a>
-          </div> */}
-          <span className="mb-0.5 text-[24px] font-[500]  text-[#000]">
+        <div style={{
+          backgroundColor: style.containerStyle.backgroundColor,
+          border: style.containerStyle.border,
+          opacity: style.containerStyle.opacity,
+        }} className={`flex flex-col ${style.containerStyle.borderRadius!="0" && "rounded-t-[30px]"} z-10 bg-[#FFF6DE] relative p-4 mt-[-56px]`}>
+         
+          <span style={{
+            color:style.titleTextColor
+          }} className="mb-0.5 text-[24px] font-[500]  text-[#000]">
             {title}
           </span>
-            <span className="mb-4 whitespace-pre-wrap text-[12px] text-[#000000b3]">
+            <span style={{
+              color: style.descriptionTextColor,
+            }} className="mb-4 whitespace-pre-wrap text-[12px] text-[#000000b3]">
             {description}
             </span>
           {disclaimer && (
@@ -297,7 +265,7 @@ export const ActionLayout = ({
             />
           )}
           <ActionContent
-            css={css}
+            styleId={styleId}
             form={form}
             inputs={inputs}
             buttons={buttons}
@@ -318,17 +286,181 @@ export const ActionLayout = ({
   );
 };
 
-const colors = ['#D1F265', '#FFDA77', '#A4FFF9','#B5B4FF']
+
+
+
+
+
+
+export const STYLES: TStyle[] = [
+  {
+    id: 0,
+    containerStyle: {
+      border: "1px solid #FFBDBD",
+      borderRadius: "23px",
+      backgroundColor: "#C7BCBC80",
+      opacity: 100,
+    },
+    titleTextColor: "#ffffff",
+    descriptionTextColor: "#FFFFFFB2",
+    buttonsStyle: [
+      {
+        backgroundColor: "#c7bcbc80",
+        borderColor: "",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#c7bcbc80",
+        borderColor: "",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#c7bcbc80",
+        borderColor: "",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#c7bcbc80",
+        borderColor: "",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+    ],
+    imageObjectStyle: "cover",
+    backgroundColor: "#c7bcbc80",
+  },
+  {
+    id: 1,
+    containerStyle: {
+      border: "2px solid #000000",
+      borderRadius: "0",
+      backgroundColor: "#ffffff",
+      opacity: 100,
+    },
+    titleTextColor: "#000000",
+    descriptionTextColor: "#000000",
+    buttonsStyle: 
+      [{
+        backgroundColor: "#EE2B3C",
+        borderColor: "#000000",
+        textColor: "#ffffff",
+        borderRadius: "0",
+      },
+      {
+        backgroundColor: "#FEBD25",
+        borderColor: "#000000",
+        textColor: "#000000",
+        borderRadius: "0",
+      },
+      {
+        backgroundColor: "#000000",
+        borderColor: "#000000",
+        textColor: "#ffffff",
+        borderRadius: "0",
+      },
+      {
+        backgroundColor: "#196EA7",
+        borderColor: "#000000",
+        textColor: "#ffffff",
+        borderRadius: "0",
+      },
+    ],
+    imageObjectStyle: "cover",
+    backgroundColor: "#fff",
+  },
+  {
+    id: 2,
+    containerStyle: {
+      border: "1px solid white",
+      borderRadius: "23px",
+      backgroundColor: "white",
+      opacity: 100,
+    },
+    titleTextColor: "#000000",
+    descriptionTextColor: "#000000",
+    buttonsStyle: [
+      {
+        backgroundColor: "#AEAAAA5C",
+        borderColor: "transparent",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#AEAAAA5C",
+        borderColor: "transparent",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#AEAAAA5C",
+        borderColor: "transparent",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#AEAAAA5C",
+        borderColor: "transparent",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      }],
+    imageObjectStyle: "cover",
+    backgroundColor: "#fff",
+  },
+  {
+    id: 3,
+    containerStyle: {
+      border: "none",
+      borderRadius: "23px",
+      backgroundColor: "#FFF6DE",
+      opacity: 100,
+    },
+    titleTextColor: "#000000",
+    descriptionTextColor: "#000000",
+    buttonsStyle: [
+      {
+        backgroundColor: "#D1F265",
+        borderColor: "#00000000",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#FFDA77",
+        borderColor: "#00000000",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#A4FFF9",
+        borderColor: "#00000000",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+      {
+        backgroundColor: "#B5B4FF",
+        borderColor: "#00000000",
+        textColor: "#000000",
+        borderRadius: "9999px",
+      },
+    ],
+    imageObjectStyle: "contain",
+    backgroundColor: "#FFF6DE",
+  },
+];
 
 const ActionContent = ({
   form,
   inputs,
   buttons,
-  css,
-}: Pick<LayoutProps, 'form' | 'buttons' | 'inputs' | 'css'>) => {
+  styleId,
+}: Pick<LayoutProps, 'form' | 'buttons' | 'inputs' | 'styleId'>) => {
   if (form) {
     return <ActionForm form={form} />;
   }
+
+  const css: TStyle = STYLES[styleId];
   // active = index+1 (positive is success, negative is fail)
   const [active, setActive] = useState(-1)
   const [fail, setFail] = useState(false)
@@ -361,12 +493,7 @@ const ActionContent = ({
             },
             );
           }}
-          css={{
-            // color: `#${css?.textColor}`,
-            // bg: `#${css?.buttonBg}`,
-            color: '#000',
-            bg: colors[index],
-          }}
+          css={css.buttonsStyle[index]}
           // className="w-full"
           />
         </div>

@@ -6,11 +6,31 @@ import {
 
 export type InputType = ActionParameterType;
 
-export interface BaseButtonProps {
-  css: {
-    bg: string;
-    color: string;
+
+export type TStyle = {
+  id: number;
+  imageObjectStyle: "contain" | "cover" | "none";
+  backgroundColor: string;
+  containerStyle: {
+    border: string;
+    borderRadius: string;
+    backgroundColor: string;
+    opacity: number;
   };
+  titleTextColor: string;
+  descriptionTextColor: string;
+  buttonsStyle: CssButtonProps[]
+};
+
+export interface CssButtonProps {
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  borderRadius: string;
+}
+
+export interface BaseButtonProps {
+  css: CssButtonProps;
   text: string | null;
   loading?: boolean;
   variant?: 'default' | 'success' | 'error';

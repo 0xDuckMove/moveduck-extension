@@ -1,27 +1,29 @@
 import clsx from 'clsx';
 import type { PropsWithChildren } from 'react';
+import { CssButtonProps } from './inputs/types';
 
 export const Button = ({
   onClick,
   disabled,
   variant = 'default',
   children,
-  bg,
-  text,
+  css,
 }: {
   success?: boolean;
   fail?: boolean;
   onClick: () => void;
   disabled?: boolean;
   variant?: 'success' | 'error' | 'default';
-  bg: string;
-  text: string;
+  css: CssButtonProps;
 } & PropsWithChildren) => {
+  
   return (
     <button
       style={{
-        backgroundColor: variant == 'default' ? bg : '',
-        color: variant == 'default' ? text : '',
+        backgroundColor: variant == 'default' ? css.backgroundColor : '',
+        color: variant == 'default' ? css.textColor : '',
+        borderColor: css.borderColor,
+        borderRadius: css.borderRadius,
       }}
       className={clsx(
         'flex w-full max-w-full items-center justify-center text-nowrap rounded-button px-4 py-3 text-text font-semibold transition-colors motion-reduce:transition-none',

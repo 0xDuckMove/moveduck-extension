@@ -24,8 +24,7 @@ export const ActionButton = ({
 
   return (
     <Button
-      text={css.color}
-      bg={css.bg}
+      css={css}
       onClick={() => {
         if(variant == 'success' || variant == 'error'){
           console.log('variant', variant)
