@@ -15,6 +15,7 @@ import { SERVER } from './utils/constants';
 import { actionTracking } from './utils/storage';
 import Completed from './popup/components/completed';
 import { parseUrl } from './utils/url-parser';
+import { createElement } from 'react';
 
 //init constants
 
@@ -106,6 +107,7 @@ async function handleNewNode(
   options: NormalizedObserverOptions,
 ) {
   const element = node as Element;
+  console.log('newnode', element);
   // first quick filtration
   if (!element || element.localName !== 'div') {
     return;
@@ -177,7 +179,25 @@ async function handleNewNode(
   }
  
   
-  if(!container || !targetElement) return;
+  if(!container || !targetElement) {
+    console.log('1HandleNewNode: container or targetElement is null', targetElement, 'container');
+    if(targetElement) {
+      try {
+      const newElement = document.createElement('div');
+      newElement.classList.add('dialect-wrapper');
+      const parent = targetElement.parentElement as HTMLElement; 
+      parent.appendChild(newElement);
+
+      container = newElement;
+      console.log('2HandleNewNode: container is null, new container', container);
+      }catch(e) {
+        console.log('2HandleNewNode: container is null, new container error', e)
+      }
+    } else {
+      console.log('2HandleNewNode: targetElement is null', targetElement);
+      return;
+    }
+    };
   const articleContainer = element.getElementsByTagName('article')[0];
   // remove default css class (overflow)
   if (articleContainer) {
@@ -185,6 +205,10 @@ async function handleNewNode(
     articleContainer.classList.remove('r-1udh08x')
     if(articleContainer.classList.contains('r-1udh08x'))
         articleContainer.classList.replace('r-1udh08x', 'replace');
+  }
+  if(!container) {
+    console.log('3HandleNewNode: container is null', container);
+    return;
   }
   addMargin(container).replaceChildren(createAction(actionApiUrl, container.parentElement as HTMLElement, targetElement, actionTrackingResult));
 }

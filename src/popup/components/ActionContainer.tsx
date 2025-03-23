@@ -51,12 +51,8 @@ const ActionContainer = ({
       actionId = parsed.actionId;
       const trackingResult = await actionTracking(action, actionId)
 
-
-      console.log('actioncontainer trackingResult', trackingResult);
-      console.log('actioncontainer actioncontainer', apiAction, action, actionId);
       // const {action, actionId} = parse
       setCurrentAction(action)
-      console.log('actioncontainer trackingResult', trackingResult);
       if(action == QUIZ_ACTION && !trackingResult){
         setIsActionDoneBefore(true);
       }
@@ -109,7 +105,6 @@ const ActionContainer = ({
     const account = await chrome.storage.local.get('address');
 
     const {action: actionString, actionId} = parsePostUrl(action.href);
-    console.log('action', actionString, actionId, action.href);
     // const actionString = action.href.split(SERVER)[1].split('/')[1];
     // console.log('action', actionString);
     // if(actionString == 'quiz') {

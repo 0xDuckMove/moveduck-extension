@@ -22,6 +22,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true;
 });
 
+
+
+
 async function handleWalletCommunication(
   tabId: number,
   type: string,
